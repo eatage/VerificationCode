@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="demo.htm" />
+    <Content Include="demo.png" />
     <Content Include="lib\Newtonsoft.Json.dll" />
     <Content Include="lib\System.Data.SQLite.dll" />
     <Content Include="src\200_100\0.png" />
