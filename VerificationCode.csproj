@@ -1,0 +1,250 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5B63D35A-8393-453A-8DC4-EFD7EF30A09A}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VerificationCode</RootNamespace>
+    <AssemblyName>VerificationCode</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <UseIISExpress>false</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\webdll\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite, Version=1.0.60.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="demo.htm" />
+    <Content Include="lib\Newtonsoft.Json.dll" />
+    <Content Include="lib\System.Data.SQLite.dll" />
+    <Content Include="src\200_100\0.png" />
+    <Content Include="src\200_100\1.png" />
+    <Content Include="src\200_100\10.png" />
+    <Content Include="src\200_100\11.png" />
+    <Content Include="src\200_100\12.png" />
+    <Content Include="src\200_100\13.png" />
+    <Content Include="src\200_100\14.png" />
+    <Content Include="src\200_100\15.png" />
+    <Content Include="src\200_100\16.png" />
+    <Content Include="src\200_100\17.png" />
+    <Content Include="src\200_100\18.png" />
+    <Content Include="src\200_100\19.png" />
+    <Content Include="src\200_100\2.png" />
+    <Content Include="src\200_100\20.png" />
+    <Content Include="src\200_100\21.png" />
+    <Content Include="src\200_100\22.png" />
+    <Content Include="src\200_100\23.png" />
+    <Content Include="src\200_100\24.png" />
+    <Content Include="src\200_100\25.png" />
+    <Content Include="src\200_100\26.png" />
+    <Content Include="src\200_100\27.png" />
+    <Content Include="src\200_100\28.png" />
+    <Content Include="src\200_100\29.png" />
+    <Content Include="src\200_100\3.png" />
+    <Content Include="src\200_100\30.png" />
+    <Content Include="src\200_100\31.png" />
+    <Content Include="src\200_100\32.png" />
+    <Content Include="src\200_100\33.png" />
+    <Content Include="src\200_100\34.png" />
+    <Content Include="src\200_100\35.png" />
+    <Content Include="src\200_100\36.png" />
+    <Content Include="src\200_100\37.png" />
+    <Content Include="src\200_100\38.png" />
+    <Content Include="src\200_100\39.png" />
+    <Content Include="src\200_100\4.png" />
+    <Content Include="src\200_100\5.png" />
+    <Content Include="src\200_100\6.png" />
+    <Content Include="src\200_100\7.png" />
+    <Content Include="src\200_100\8.png" />
+    <Content Include="src\200_100\9.png" />
+    <Content Include="src\300_200\0.png" />
+    <Content Include="src\300_200\1.png" />
+    <Content Include="src\300_200\10.png" />
+    <Content Include="src\300_200\11.png" />
+    <Content Include="src\300_200\12.png" />
+    <Content Include="src\300_200\13.png" />
+    <Content Include="src\300_200\14.png" />
+    <Content Include="src\300_200\15.png" />
+    <Content Include="src\300_200\16.png" />
+    <Content Include="src\300_200\17.png" />
+    <Content Include="src\300_200\18.png" />
+    <Content Include="src\300_200\19.png" />
+    <Content Include="src\300_200\2.png" />
+    <Content Include="src\300_200\20.png" />
+    <Content Include="src\300_200\21.png" />
+    <Content Include="src\300_200\22.png" />
+    <Content Include="src\300_200\23.png" />
+    <Content Include="src\300_200\24.png" />
+    <Content Include="src\300_200\25.png" />
+    <Content Include="src\300_200\26.png" />
+    <Content Include="src\300_200\27.png" />
+    <Content Include="src\300_200\28.png" />
+    <Content Include="src\300_200\29.png" />
+    <Content Include="src\300_200\3.png" />
+    <Content Include="src\300_200\30.png" />
+    <Content Include="src\300_200\31.png" />
+    <Content Include="src\300_200\32.png" />
+    <Content Include="src\300_200\33.png" />
+    <Content Include="src\300_200\34.png" />
+    <Content Include="src\300_200\35.png" />
+    <Content Include="src\300_200\36.png" />
+    <Content Include="src\300_200\37.png" />
+    <Content Include="src\300_200\38.png" />
+    <Content Include="src\300_200\39.png" />
+    <Content Include="src\300_200\4.png" />
+    <Content Include="src\300_200\5.png" />
+    <Content Include="src\300_200\6.png" />
+    <Content Include="src\300_200\7.png" />
+    <Content Include="src\300_200\8.png" />
+    <Content Include="src\300_200\9.png" />
+    <Content Include="src\300_300\0.png" />
+    <Content Include="src\300_300\1.png" />
+    <Content Include="src\300_300\10.png" />
+    <Content Include="src\300_300\11.png" />
+    <Content Include="src\300_300\12.png" />
+    <Content Include="src\300_300\13.png" />
+    <Content Include="src\300_300\14.png" />
+    <Content Include="src\300_300\15.png" />
+    <Content Include="src\300_300\16.png" />
+    <Content Include="src\300_300\17.png" />
+    <Content Include="src\300_300\18.png" />
+    <Content Include="src\300_300\19.png" />
+    <Content Include="src\300_300\2.png" />
+    <Content Include="src\300_300\20.png" />
+    <Content Include="src\300_300\21.png" />
+    <Content Include="src\300_300\22.png" />
+    <Content Include="src\300_300\23.png" />
+    <Content Include="src\300_300\24.png" />
+    <Content Include="src\300_300\25.png" />
+    <Content Include="src\300_300\26.png" />
+    <Content Include="src\300_300\27.png" />
+    <Content Include="src\300_300\28.png" />
+    <Content Include="src\300_300\29.png" />
+    <Content Include="src\300_300\3.png" />
+    <Content Include="src\300_300\30.png" />
+    <Content Include="src\300_300\31.png" />
+    <Content Include="src\300_300\32.png" />
+    <Content Include="src\300_300\33.png" />
+    <Content Include="src\300_300\34.png" />
+    <Content Include="src\300_300\35.png" />
+    <Content Include="src\300_300\36.png" />
+    <Content Include="src\300_300\37.png" />
+    <Content Include="src\300_300\38.png" />
+    <Content Include="src\300_300\39.png" />
+    <Content Include="src\300_300\4.png" />
+    <Content Include="src\300_300\5.png" />
+    <Content Include="src\300_300\6.png" />
+    <Content Include="src\300_300\7.png" />
+    <Content Include="src\300_300\8.png" />
+    <Content Include="src\300_300\9.png" />
+    <Content Include="src\drag.css" />
+    <Content Include="src\drag.js" />
+    <Content Include="src\jquery-1.7.2.min.js" />
+    <Content Include="Web.config" />
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SQLiteHelper.cs" />
+    <Compile Include="VerificationCode.ashx.cs">
+      <DependentUpon>VerificationCode.ashx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="VerificationCode.ashx" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>27352</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>
+          </IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
