@@ -224,13 +224,22 @@ namespace VerificationCode
             string ls_small = "data:image/png;base64," + ImgToBase64String(cutImage(bmp, _shearSize, _shearSize, _PositionX, _PositionY));
             Bitmap lb_normal = GetNewBitMap(bmp, _shearSize, _shearSize, _PositionX, _PositionY);
             string ls_confusion = "data:image/png;base64," + ImgToBase64String(ConfusionImage(array, lb_normal));
-            JObject jObject = JObject.Parse(GetJson);
+            JObject jObject = new JObject();// JObject.Parse(GetJson);
+            jObject["errcode"] = 0;
             jObject["y"] = _PositionY;
-            jObject["small"] = ls_small;
-            jObject["normal"] = ls_confusion;
             jObject["array"] = string.Join(",", array);
             jObject["imgx"] = _ImgWidth;
             jObject["imgy"] = _ImgHeight;
+            jObject["small"] = ls_small;
+            jObject["normal"] = ls_confusion;
+            /* errcode: 状态值 成功为0
+             * y:裁剪图片y轴位置
+             * small：小图字符串
+             * normal：剪切小图后的原图并按无序数组重新排列后的图
+             * array：无序数组
+             * imgx：原图宽
+             * imgy：原图高
+             */
             return jObject.ToString();
         }
 
@@ -245,19 +254,6 @@ namespace VerificationCode
                 OutString += OutBytes[i].ToString("x2");
             }
             return OutString.ToUpper();
-        }
-
-        private string GetJson
-        {
-            //返回json格式
-            /* y:裁剪图片y轴位置
-             * small：小图字符串
-             * normal：剪切小图后的原图并按无序数组重新排列后的图
-             * array：无序数组
-             * imgx：原图宽
-             * imgy：原图高
-             */
-            get { return "{\"errcode\":0,\"y\":10,\"imgx\":300,\"imgy\":300,\"small\":\"123456789\",\"array\":\"\",\"normal\":\"123456789\"}"; }
         }
         /// <summary>
         /// 获取裁剪的小图
@@ -375,7 +371,7 @@ namespace VerificationCode
                 String strbaser64 = Convert.ToBase64String(arr);
                 return strbaser64;
             }
-            catch (Exception ex)
+            catch
             {
                 //ImgToBase64String 转换失败\nException:" + ex.Message);
                 return null;
@@ -392,7 +388,7 @@ namespace VerificationCode
                 ms.Close();
                 return bmp;
             }
-            catch (Exception ex)
+            catch
             {
                 //Base64StringToImage 转换失败\nException：" + ex.Message);
                 return null;
