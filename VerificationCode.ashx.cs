@@ -19,7 +19,7 @@ namespace VerificationCode
         //原始图片所在路径 300*300
         private string path = System.Web.HttpContext.Current.Server.MapPath("src") + "\\300_300\\";
         //原始图片数量
-        private const int _ImgNum = 40;
+        private const int _ImgNum = 60;
         //原始图片宽px
         private int _ImgWidth = 300;
         //原始图片高px
