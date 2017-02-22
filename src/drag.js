@@ -7,7 +7,7 @@ document.ready = __init;
 var __imgx = 0; //图片宽度
 var __imgy = 0; //图片高度
 function __init() {
-    if (typeof (__spec) != "string") {//spec类型必须为string
+    if (typeof (__spec) !== "string") {//spec类型必须为string
         __spec = "300*300";
     }
     if (__spec == "")
@@ -90,100 +90,115 @@ function refeshcode() {
     });
     $.fn.drag = function (options) {
         var x, drag = this, isMove = false, defaults = {
-    };
-    var options = $.extend(defaults, options);
-    //添加背景，文字，滑块
-    var html = '<div class="drag_bg"></div><div class="drag_text" onselectstart="return false;" unselectable="on">拖动图片验证</div><div class="handler handler_bg"><a href="javascript:;" onclick="refeshcode()" title="点击刷新验证码" style="width:16px;height:16px;"><div class="refesh_bg"></div></a></div>';
-    this.append(html);
-    var handler = drag.find('.handler');
-    var drag_bg = drag.find('.drag_bg');
-    var text = drag.find('.drag_text');
-    var maxWidth = __imgx - 40; // drag.width() - handler.width();  //能滑动的最大间距
-    var t1 = new Date(); //开始滑动时间
-    var t2 = new Date(); //结束滑动时间
-    //鼠标按下时候的x轴的位置
-    handler.mousedown(function (e) {
-        $xy_img.show();
-        isMove = true;
-        x = e.pageX - parseInt(handler.css('left'), 10);
-        t1 = new Date();
-    });
-    var $xy_img = $("#xy_img");
-    var arrayDate = new Array();//鼠标移动轨迹
-    //鼠标指针在上下文移动时，移动距离大于0小于最大间距，滑块x轴位置等于鼠标移动距离
-    $(document).mousemove(function (e) {
-        var _x = e.pageX - x;
-        if (isMove) {
-            $xy_img.css({ 'left': _x });
-            if (_x > 0 && _x <= maxWidth) {
-                $(".refesh_bg").hide();
-                handler.css({ 'left': _x });
-                drag_bg.css({ 'width': _x });
-                arrayDate.push([_x, new Date().getTime()]);
-            }
-            else if (_x > maxWidth) {  //鼠标指针移动距离达到最大时清空事件
-            }
+        };
+        options = $.extend(defaults, options);
+        //添加背景，文字，滑块
+        var html = '<div class="drag_bg"></div><div class="drag_text" onselectstart="return false;" unselectable="on">拖动图片验证</div><div class="handler handler_bg"><a href="javascript:;" onclick="refeshcode()" title="点击刷新验证码" style="width:16px;height:16px;"><div class="refesh_bg"></div></a></div>';
+        this.append(html);
+        var handler = drag.find('.handler');
+        var drag_bg = drag.find('.drag_bg');
+        var text = drag.find('.drag_text');
+        var maxWidth = __imgx - 40; // drag.width() - handler.width();  //能滑动的最大间距
+        var t1 = new Date(); //开始滑动时间
+        var t2 = new Date(); //结束滑动时间
+
+        //开始滑动
+        function dragstart(thisx) {
+            $xy_img.show();
+            isMove = true;
+            x = thisx - parseInt(handler.css('left'), 10);
+            t1 = new Date();
         }
-    }).mouseup(function (e) {
-        isMove = false;
-        if (x == NaN || x == undefined) {
-            return;
-        }
-        var _x = e.pageX - x;
-        if (_x < 10) {
-            $(".refesh_bg").show();
-            $xy_img.css({ 'left': 0 });
-            handler.css({ 'left': 0 });
-            drag_bg.css({ 'width': 0 });
-            return;
-        }
-        t2 = new Date();
-        $.ajax({ //校验
-            type: "POST",
-            url: "./VerificationCode.ashx?action=check",
-            dataType: "json",
-            async: false,
-            data: 
-            { 
-                point: _x, 
-                timespan: (t2 - t1),
-                datelist: arrayDate.join("|") 
-            },
-            success: function (result) {
-                if (result['state'] == 0) {
-                    for (var i = 1; 4 >= i; i++) {
-                        $xy_img.animate({ left: _x - (40 - 10 * i) }, 50);
-                        $xy_img.animate({ left: _x + 2 * (40 - 10 * i) }, 50, function () {
-                            $xy_img.css({ 'left': result['data'] });
-                        });
-                    }
-                    handler.css({ 'left': maxWidth });
-                    drag_bg.css({ 'width': maxWidth });
-                    $xy_img.removeClass('xy_img_bord');
-                    dragOk();
-                } else {
-                    $(".refesh_bg").show();
-                    $xy_img.css({ 'left': 0 });
-                    handler.css({ 'left': 0 });
-                    drag_bg.css({ 'width': 0 });
-                    if (result['msg'] > 6) __init();
+        var $xy_img = $("#xy_img");
+        var arrayDate = new Array();//鼠标/手指移动轨迹
+        /*
+         *鼠标/手指在上下文移动时，
+         *移动距离大于0小于最大间距
+         *滑块x轴位置等于鼠标移动距离
+         */
+        handler.mousedown(function (e) { dragstart(e.pageX); });//鼠标按下
+        handler.mousemove(function (e) { dragmoving(e.pageX); });//移动鼠标
+        handler.mouseup(function (e) { dragmovend(e.pageX); });//松开鼠标
+        handler.mouseout(function (e) {  });//鼠标移出元素
+        handler.on("touchstart", function (e) { dragstart(e.originalEvent.touches[0].pageX); });//手指按下
+        handler.on("touchmove", function (e) { dragmoving(e.originalEvent.touches[0].pageX); });//手指移动
+        handler.on("touchend", function (e) { dragmovend(e.originalEvent.changedTouches[0].pageX); });//手指松开
+        //鼠标/手指移动过程
+        function dragmoving(thisx) {
+            var _x = thisx - x;
+            if (isMove) {
+                $xy_img.css({ 'left': _x });
+                if (_x > 0 && _x <= maxWidth) {
+                    $(".refesh_bg").hide();
+                    handler.css({ 'left': _x });
+                    drag_bg.css({ 'width': _x });
+                    arrayDate.push([_x, new Date().getTime()]);
                 }
-            },
-            beforeSend: function () {
+                else if (_x > maxWidth) {  //鼠标指针移动距离达到最大时清空事件
+                }
             }
-        });
-    });
-    //清空事件
-    function dragOk() {
-        handler.removeClass('handler_bg').addClass('handler_ok_bg');
-        text.text('验证通过');
-        drag.css({ 'color': '#fff' });
-        handler.unbind('mousedown');
-        $(document).unbind('mousemove');
-        $(document).unbind('mouseup');
-        $(".refesh_bg").hide();
-        if (executename != '')
-            window[executename]();
-    }
-};
+        }
+        //鼠标/手指移动结束
+        function dragmovend(thisx) {
+            isMove = false;
+            if (isNaN(x) || x == undefined) {
+                return;
+            }
+            var _x = thisx - x;
+            if (_x < 10) {
+                $(".refesh_bg").show();
+                $xy_img.css({ 'left': 0 });
+                handler.css({ 'left': 0 });
+                drag_bg.css({ 'width': 0 });
+                return;
+            }
+            t2 = new Date();
+            $.ajax({ //校验
+                type: "POST",
+                url: "./VerificationCode.ashx?action=check",
+                dataType: "json",
+                async: false,
+                data:
+                {
+                    point: _x,
+                    timespan: (t2 - t1),
+                    datelist: arrayDate.join("|")
+                },
+                success: function (result) {
+                    if (result['state'] == 0) {
+                        for (var i = 1; 4 >= i; i++) {
+                            $xy_img.animate({ left: _x - (40 - 10 * i) }, 50);
+                            $xy_img.animate({ left: _x + 2 * (40 - 10 * i) }, 50, function () {
+                                $xy_img.css({ 'left': result['data'] });
+                            });
+                        }
+                        handler.css({ 'left': maxWidth });
+                        drag_bg.css({ 'width': maxWidth });
+                        $xy_img.removeClass('xy_img_bord');
+                        dragOk();
+                    } else {
+                        $(".refesh_bg").show();
+                        $xy_img.css({ 'left': 0 });
+                        handler.css({ 'left': 0 });
+                        drag_bg.css({ 'width': 0 });
+                        if (result['msg'] > 6) __init();
+                    }
+                },
+                beforeSend: function () {
+                }
+            })
+        }
+        //清空事件
+        function dragOk() {
+            handler.removeClass('handler_bg').addClass('handler_ok_bg');
+            text.text('验证通过');
+            drag.css({ 'color': '#fff' });
+            handler.unbind('mousedown');
+            $(document).unbind('mousemove');
+            $(document).unbind('mouseup');
+            $(".refesh_bg").hide();
+            if (executename != '')
+                window[executename]();
+        }
+    };
 })(jQuery);
