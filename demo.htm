@@ -8,8 +8,14 @@
     <script src="./src/jquery-1.7.2.min.js" type="text/javascript"></script>
     <script src="./src/drag.js" type="text/javascript"></script>
     <script type="text/javascript">
-        var __spec = "200*100"; //验证码图片规格 "300*300", "300*200", "200*100"
-        var executename = "";//校验通过时执行的函数名
+        $(function () {
+            //参数一 验证码图片规格 "300*300", "300*200", "200*100"
+            //参数二 校验通过时执行的函数名
+            $("#__Verification").slide("200*100", "test");
+        })
+        function test() {
+            console.log("Verification Success!!!");
+        }
     </script>
 </head>
 <body>
