@@ -11,6 +11,7 @@
         $(function () {
             //参数一 验证码图片规格 "300*300", "300*200", "200*100"
             //参数二 校验通过时执行的函数名
+            //绑定的div width与图片宽一致 height为图片高加34像素
             $("#__Verification").slide("200*100", "test");
         })
         function test() {

@@ -3,12 +3,15 @@
 * date 2017-02-10
 * 获取滑块验证码
 */
-(function($){
+(function ($) {
     var __imgx = 0; //图片宽度
     var __imgy = 0; //图片高度
-    var __spec = "";
-    var __executename;
+    var __spec = "";//图片尺寸
+    var __executename;//校验通过后执行的函数名
+    var __Verification;//验证码区域的div
     $.fn.slide = function (imgspec, executename) {
+        var div = this;
+        __Verification = div.attr("id");
         __spec = imgspec;
         __executename = executename;
         __init();
@@ -23,7 +26,7 @@
         __imgx = _spec[0];
         __imgy = _spec[1];
         CreadeCodeDiv();
-        $('#drag').drag(__executename, __imgx, __imgy);
+        $('#drag').drag(__executename, __imgx, __imgy, __Verification);
         $.ajax({ //获取验证码
             type: "POST",
             url: "./VerificationCode.ashx?action=getcode&&spec=" + __spec,
@@ -36,7 +39,7 @@
                 }
                 var errcode = result['errcode'];
                 if (errcode != 0) {
-                    document.getElementById('__Verification').innerHTML = "<span style='color:red'>验证码获取失败，" + result['errmsg'] + "</span>";
+                    document.getElementById(__Verification).innerHTML = "<span style='color:red'>验证码获取失败，" + result['errmsg'] + "</span>";
                 }
                 var yvalue = result['y'];
                 var small = result['small'];
@@ -44,13 +47,13 @@
                 var normal = result['normal'];
                 __imgx = result['imgx'];
                 __imgy = result['imgy'];
-                $(".gt_cut_fullbg_slice").css("background-image", "url(" + normal + ")");
+                $(".cut_bg").css("background-image", "url(" + normal + ")");
                 $("#xy_img").css("background-image", "url(" + small + ")");
                 $("#xy_img").css("top", yvalue);
                 $("#drag").css("width", __imgx);
                 $("#drag .drag_text").css("width", __imgx);
-                $(".gt_cut_fullbg_slice").css("width", __imgx / 10);
-                $(".gt_cut_fullbg_slice").css("height", __imgy / 2);
+                $(".cut_bg").css("width", __imgx / 10);
+                $(".cut_bg").css("height", __imgy / 2);
                 $(".refesh_bg").css("left", __imgx - 25);
                 var bgarray = array.split(',');
                 //还原图片
@@ -82,9 +85,16 @@
         for (var i = 0; i < len; i++) { if (arr[i] == str) return i; } return -1;
     }
     function CreadeCodeDiv() {
-        var __codeDIV = document.getElementById('__Verification');
-        $("#__Verification").empty();
-        var __codeHTML = "<div style='width:" + __imgx + "px;height:" + __imgy + "px;'><div id='bb0'class='gt_cut_fullbg_slice'></div><div id='bb1'class='gt_cut_fullbg_slice'></div><div id='bb2'class='gt_cut_fullbg_slice'></div><div id='bb3'class='gt_cut_fullbg_slice'></div><div id='bb4'class='gt_cut_fullbg_slice'></div><div id='bb5'class='gt_cut_fullbg_slice'></div><div id='bb6'class='gt_cut_fullbg_slice'></div><div id='bb7'class='gt_cut_fullbg_slice'></div><div id='bb8'class='gt_cut_fullbg_slice'></div><div id='bb9'class='gt_cut_fullbg_slice'></div><div id='bb10'class='gt_cut_fullbg_slice'></div><div id='bb11'class='gt_cut_fullbg_slice'></div><div id='bb12'class='gt_cut_fullbg_slice'></div><div id='bb13'class='gt_cut_fullbg_slice'></div><div id='bb14'class='gt_cut_fullbg_slice'></div><div id='bb15'class='gt_cut_fullbg_slice'></div><div id='bb16'class='gt_cut_fullbg_slice'></div><div id='bb17'class='gt_cut_fullbg_slice'></div><div id='bb18'class='gt_cut_fullbg_slice'></div><div id='bb19'class='gt_cut_fullbg_slice'></div><div style='top:32px;left:0px;display:none;border:1px solid rgb(255,255,255)'id='xy_img'class='xy_img_bord'></div></div><div id='drag'></div>";
+        var __codeDIV = document.getElementById('' + __Verification + '');
+        __codeDIV.innerHTML = '';
+        var __codeHTML = "<div style='width:" + __imgx + "px;height:" + __imgy + "px;'><div id='bb0'class='cut_bg'></div>"
+            + "<div id='bb1'class='cut_bg'></div><div id='bb2'class='cut_bg'></div><div id='bb3'class='cut_bg'></div>"
+            + "<div id='bb4'class='cut_bg'></div><div id='bb5'class='cut_bg'></div><div id='bb6'class='cut_bg'></div>"
+            + "<div id='bb7'class='cut_bg'></div><div id='bb8'class='cut_bg'></div><div id='bb9'class='cut_bg'></div>"
+            + "<div id='bb10'class='cut_bg'></div><div id='bb11'class='cut_bg'></div><div id='bb12'class='cut_bg'></div>"
+            + "<div id='bb13'class='cut_bg'></div><div id='bb14'class='cut_bg'></div><div id='bb15'class='cut_bg'></div>"
+            + "<div id='bb16'class='cut_bg'></div><div id='bb17'class='cut_bg'></div><div id='bb18'class='cut_bg'></div>"
+            + "<div id='bb19'class='cut_bg'></div><div id='xy_img'class='xy_img_bord'></div></div><div id='drag'></div>";
         __codeDIV.innerHTML = __codeHTML;
     }
 })(jQuery);
@@ -96,11 +106,13 @@
         var oEvent = ev || event;
         console.log("x坐标是:" + oEvent.clientX + ",y坐标是:" + oEvent.clientY);
     });
-    $.fn.drag = function (executename, imgx, imgy) {
+    $.fn.drag = function (executename, imgx, imgy, __Verification) {
         var x, drag = this, isMove = false, defaults = {
         };
         //添加背景，文字，滑块
-        var html = '<div class="drag_bg"></div><div class="drag_text" onselectstart="return false;" unselectable="on">拖动图片验证</div><div class="handler handler_bg"><a href="javascript:;" onclick="$(this).slide(\'' + imgx + '*' + imgy + '\',\'' + executename + '\')" title="点击刷新验证码" style="width:16px;height:16px;"><div class="refesh_bg"></div></a></div>';
+        var html = '<div class="drag_bg"></div><div class="drag_text" onselectstart="return false;" unselectable="on">拖动图片验证</div>'
+            + '<div class="handler handler_bg"><a href="javascript:;" onclick="$(' + __Verification + ').slide(\'' + imgx + '*' + imgy + '\',\'' + executename + '\')"'
+            + ' title="点击刷新验证码" style="width:16px;height:16px;"><div class="refesh_bg"></div></a></div>';
         this.append(html);
         var handler = drag.find('.handler');
         var drag_bg = drag.find('.drag_bg');
@@ -126,7 +138,7 @@
         handler.mousedown(function (e) { dragstart(e.pageX); });//鼠标按下
         handler.mousemove(function (e) { dragmoving(e.pageX); });//移动鼠标
         handler.mouseup(function (e) { dragmovend(e.pageX); });//松开鼠标
-        handler.mouseout(function (e) {  });//鼠标移出元素
+        handler.mouseout(function (e) { });//鼠标移出元素
         handler.on("touchstart", function (e) { dragstart(e.originalEvent.touches[0].pageX); });//手指按下
         handler.on("touchmove", function (e) { dragmoving(e.originalEvent.touches[0].pageX); });//手指移动
         handler.on("touchend", function (e) { dragmovend(e.originalEvent.changedTouches[0].pageX); });//手指松开
@@ -182,6 +194,7 @@
                         handler.css({ 'left': maxWidth });
                         drag_bg.css({ 'width': maxWidth });
                         $xy_img.removeClass('xy_img_bord');
+                        $xy_img.css("border", "1px solid rgb(255,255,255)");
                         dragOk();
                     } else {
                         $(".refesh_bg").show();
