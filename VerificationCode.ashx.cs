@@ -128,12 +128,12 @@ namespace VerificationCode
             string datelist = context.Request["datelist"];//滑动过程特征
             string timespan = context.Request["timespan"];//耗时
 
-            if (HttpContext.Current.Session[context.Request["key"] + "code"] == null)
+            if (HttpContext.Current.Session["code"] == null)
             { WriteError(context, "发生错误"); return; }
             if (string.IsNullOrEmpty(ls_point))
             { WriteError(context, "未获取到坐标值"); return; }
             int li_old_point = 0, li_now_point = 0;
-            try { li_old_point = int.Parse(HttpContext.Current.Session[context.Request["key"] + "code"].ToString()); }
+            try { li_old_point = int.Parse(HttpContext.Current.Session["code"].ToString()); }
             catch { WriteError(context, "发生错误-1"); return; }
             try { li_now_point = int.Parse(ls_point); }
             catch { WriteError(context, "获取到的坐标值不正确"); return; }
@@ -143,11 +143,11 @@ namespace VerificationCode
                 int li_count = 0;
                 try
                 {
-                    li_count = int.Parse(HttpContext.Current.Session[context.Request["key"] + "code" + "errornum"].ToString());
+                    li_count = int.Parse(HttpContext.Current.Session["code_errornum"].ToString());
                 }
                 catch { li_count = 0; }
                 li_count++;
-                HttpContext.Current.Session[context.Request["key"] + "code" + "errornum"] = li_count;
+                HttpContext.Current.Session["code_errornum"] = li_count;
                 //返回错误次数
                 Write(context, "{\"state\":-1,\"msg\":" + li_count + "}"); return;
             }
@@ -156,10 +156,9 @@ namespace VerificationCode
                 //机器人??
             }
             //校验成功 返回正确坐标
-            string key = context.Request["key"];
-            HttpContext.Current.Session[key] = "OK";
-            HttpContext.Current.Session[context.Request["key"] + "code" + "errornum"] = null;
-            HttpContext.Current.Session[context.Request["key"] + "code"] = null;
+            HttpContext.Current.Session["isCheck"] = "OK";
+            HttpContext.Current.Session["code_errornum"] = null;
+            HttpContext.Current.Session["code"] = null;
             Write(context, "{\"state\":0,\"info\":\"正确\",\"data\":" + li_old_point + "}");
         }
         /// <summary>
@@ -167,11 +166,10 @@ namespace VerificationCode
         /// </summary>
         public void CheckResult(HttpContext context)
         {
-            string key = context.Request["key"];
             //校验成功 返回正确坐标
-            if (HttpContext.Current.Session[key] == null)
+            if (HttpContext.Current.Session["isCheck"] == null)
                 Write(context, "{\"errcode\":-1,\"errmsg\":\"校验未通过，未进行过校验\"}");
-            else if (HttpContext.Current.Session[key].ToString() != "OK")
+            else if (HttpContext.Current.Session["isCheck"].ToString() != "OK")
                 Write(context, "{\"errcode\":-1,\"errmsg\":\"校验未通过\"}");
             else
                 Write(context, "{\"errcode\":0,\"errmsg\":\"校验通过\"}");
@@ -216,8 +214,8 @@ namespace VerificationCode
             Random rd = new Random();
             _PositionX = rd.Next(_MinRangeX, _MaxRangeX);
             _PositionY = rd.Next(_MinRangeY, _MaxRangeY);
-            HttpContext.Current.Session[HttpContext.Current.Request["key"] + "code"] = _PositionX;
-            HttpContext.Current.Session[HttpContext.Current.Request["key"] + "code" + "errornum"] = null;
+            HttpContext.Current.Session["code"] = _PositionX;
+            HttpContext.Current.Session["code_errornum"] = null;
             int[] a = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
             int[] array = a.OrderBy(x => Guid.NewGuid()).ToArray();
             Bitmap bmp = new Bitmap(path + (new Random()).Next(0, _ImgNum - 1) + ".png");
@@ -363,7 +361,7 @@ namespace VerificationCode
             try
             {
                 MemoryStream ms = new MemoryStream();
-                bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
                 byte[] arr = new byte[ms.Length];
                 ms.Position = 0;
                 ms.Read(arr, 0, (int)ms.Length);
@@ -516,24 +514,24 @@ namespace VerificationCode
             __mv2 = __mv2 / threeEqual;
             __mv3 = __mv3 / threeEqual;
             #endregion
-
+            return true;
             //将采样结果收集到数据库
-            CreateTable();
-            n_create_sql nsql = new n_create_sql("data");
-            nsql.of_AddCol("sumtime", __totaldate);
-            nsql.of_AddCol("abscissa", HttpContext.Current.Request["point"]);
-            nsql.of_AddCol("total", _datalist.Length);
-            nsql.of_AddCol("meanv", __mv.ToString("0.0000000000"));
-            nsql.of_AddCol("meanv1", __mv1.ToString("0.0000000000"));
-            nsql.of_AddCol("meanv2", __mv2.ToString("0.0000000000"));
-            nsql.of_AddCol("meanv3", __mv3.ToString("0.0000000000"));
-            nsql.of_AddCol("meana", __ma.ToString("0.0000000000"));
-            nsql.of_AddCol("meana1", __ma1.ToString("0.0000000000"));
-            nsql.of_AddCol("meana2", __ma2.ToString("0.0000000000"));
-            nsql.of_AddCol("meana3", __ma3.ToString("0.0000000000"));
-            nsql.of_AddCol("standardv", __o2v.ToString("0.0000000000"));
-            nsql.of_AddCol("standarda", __o2a.ToString("0.0000000000"));
-            nsql.of_execute();
+            //CreateTable();
+            //n_create_sql nsql = new n_create_sql("data");
+            //nsql.of_AddCol("sumtime", __totaldate);
+            //nsql.of_AddCol("abscissa", HttpContext.Current.Request["point"]);
+            //nsql.of_AddCol("total", _datalist.Length);
+            //nsql.of_AddCol("meanv", __mv.ToString("0.0000000000"));
+            //nsql.of_AddCol("meanv1", __mv1.ToString("0.0000000000"));
+            //nsql.of_AddCol("meanv2", __mv2.ToString("0.0000000000"));
+            //nsql.of_AddCol("meanv3", __mv3.ToString("0.0000000000"));
+            //nsql.of_AddCol("meana", __ma.ToString("0.0000000000"));
+            //nsql.of_AddCol("meana1", __ma1.ToString("0.0000000000"));
+            //nsql.of_AddCol("meana2", __ma2.ToString("0.0000000000"));
+            //nsql.of_AddCol("meana3", __ma3.ToString("0.0000000000"));
+            //nsql.of_AddCol("standardv", __o2v.ToString("0.0000000000"));
+            //nsql.of_AddCol("standarda", __o2a.ToString("0.0000000000"));
+            //nsql.of_execute();
 
             return true;
         }
@@ -542,7 +540,7 @@ namespace VerificationCode
 
         private void CreateTable()
         {
-            if (SQLiteHelper.of_ExistTable("data"))
+            //if (SQLiteHelper.of_ExistTable("data"))
                 return;
             string ls_sql = @"create table data
                             (
@@ -561,7 +559,7 @@ namespace VerificationCode
                                 standardv varchar,
                                 standarda varchar
                             )";
-            SQLiteHelper.ExecuteNonQuery(ls_sql);
+            //SQLiteHelper.ExecuteNonQuery(ls_sql);
         }
 
         /// <summary>

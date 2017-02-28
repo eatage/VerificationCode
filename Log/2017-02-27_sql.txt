@@ -1,0 +1,60 @@
+Time:2017-02-27 17:06:25.182
+Message:No current row
+Sql:SELECT count(*) FROM sqlite_master WHERE type='table' AND name='data'
+-----------------------
+
+Time:2017-02-27 17:06:25.260
+Message:SQL logic error or missing database
+table data already exists
+Sql:create table data
+                            (
+                                id integer primary key autoincrement,
+                                sumtime varchar,
+                                abscissa varchar,
+                                total varchar,
+                                meanv varchar,
+                                meanv1 varchar,
+                                meanv2 varchar,
+                                meanv3 varchar,
+                                meana varchar,
+                                meana1 varchar,
+                                meana2 varchar,
+                                meana3 varchar,
+                                standardv varchar,
+                                standarda varchar
+                            )
+-----------------------
+
+Time:2017-02-27 17:06:55.300
+Message:database is locked
+database is locked
+Sql:INSERT INTO data(sumtime,abscissa,total,meanv,meanv1,meanv2,meanv3,meana,meana1,meana2,meana3,standardv,standarda) VALUES ( '1032', '88', '55', '159.6401240965', '305.9132996633', '116.6942239859', '56.3128486404', '21744.3417605803', '46345.8300082353', '13356.5181152193', '5530.6771582862', '170.0169833201', '38640.1766274915')
+-----------------------
+
+Time:2017-02-27 17:07:15.011
+Message:No current row
+Sql:SELECT count(*) FROM sqlite_master WHERE type='table' AND name='data'
+-----------------------
+
+Time:2017-02-27 17:07:29.748
+Message:SQL logic error or missing database
+table data already exists
+Sql:create table data
+                            (
+                                id integer primary key autoincrement,
+                                sumtime varchar,
+                                abscissa varchar,
+                                total varchar,
+                                meanv varchar,
+                                meanv1 varchar,
+                                meanv2 varchar,
+                                meanv3 varchar,
+                                meana varchar,
+                                meana1 varchar,
+                                meana2 varchar,
+                                meana3 varchar,
+                                standardv varchar,
+                                standarda varchar
+                            )
+-----------------------
+

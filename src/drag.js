@@ -2,6 +2,8 @@
 * drag 1.0
 * date 2017-02-10
 * 获取滑块验证码
+* JavaScript压缩工具：
+* http://tool.lu/js
 */
 (function ($) {
     var __imgx = 0; //图片宽度
@@ -15,7 +17,7 @@
         __spec = imgspec;
         __executename = executename;
         __init();
-    }
+    };
     function __init() {
         if (typeof (__spec) !== "string") {//spec类型必须为string
             __spec = "300*300";
@@ -29,7 +31,7 @@
         $('#drag').drag(__executename, __imgx, __imgy, __Verification);
         $.ajax({ //获取验证码
             type: "POST",
-            url: "./VerificationCode.ashx?action=getcode&&spec=" + __spec,
+            url: "./VerificationCode.ashx?action=getcode&spec=" + __spec,
             dataType: "json",
             async: false,
             data: { point: 0 },
@@ -206,7 +208,7 @@
                 },
                 beforeSend: function () {
                 }
-            })
+            });
         }
         //清空事件
         function dragOk() {
