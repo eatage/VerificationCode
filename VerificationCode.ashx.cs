@@ -47,7 +47,7 @@ namespace VerificationCode
         //允许误差 单位像素
         private const int _deviationPx = 2;
         //是否跨域访问 在将项目做成第三方使用时可用跨域解决方案 所有的session替换成可共用的变量(Redis)
-        private Boolean _Callback = false;
+        private Boolean _isCallback = false;
         #endregion
 
         public void ProcessRequest(HttpContext context)
@@ -179,7 +179,7 @@ namespace VerificationCode
         /// </summary>
         public void WriteError(HttpContext context, string as_Er)
         {
-            if (_Callback)
+            if (_isCallback)
             {
                 context.Response.Write(context.Request["callback"] + "({\"state\":-1,\"msg\":\"" + as_Er + "\"})");
                 context.Response.End();
@@ -195,7 +195,7 @@ namespace VerificationCode
         /// </summary>
         public void Write(HttpContext context, string as_json)
         {
-            if (_Callback)
+            if (_isCallback)
             {
                 context.Response.Write(context.Request["callback"] + "(" + as_json + ")");
                 context.Response.End();
@@ -533,7 +533,7 @@ namespace VerificationCode
             //nsql.of_AddCol("standarda", __o2a.ToString("0.0000000000"));
             //nsql.of_execute();
 
-            return true;
+            //return true;
         }
 
 
@@ -542,23 +542,23 @@ namespace VerificationCode
         {
             //if (SQLiteHelper.of_ExistTable("data"))
                 return;
-            string ls_sql = @"create table data
-                            (
-                                id integer primary key autoincrement,
-                                sumtime varchar,
-                                abscissa varchar,
-                                total varchar,
-                                meanv varchar,
-                                meanv1 varchar,
-                                meanv2 varchar,
-                                meanv3 varchar,
-                                meana varchar,
-                                meana1 varchar,
-                                meana2 varchar,
-                                meana3 varchar,
-                                standardv varchar,
-                                standarda varchar
-                            )";
+            //string ls_sql = @"create table data
+            //                (
+            //                    id integer primary key autoincrement,
+            //                    sumtime varchar,
+            //                    abscissa varchar,
+            //                    total varchar,
+            //                    meanv varchar,
+            //                    meanv1 varchar,
+            //                    meanv2 varchar,
+            //                    meanv3 varchar,
+            //                    meana varchar,
+            //                    meana1 varchar,
+            //                    meana2 varchar,
+            //                    meana3 varchar,
+            //                    standardv varchar,
+            //                    standarda varchar
+            //                )";
             //SQLiteHelper.ExecuteNonQuery(ls_sql);
         }
 

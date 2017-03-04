@@ -2,51 +2,52 @@
 * drag 1.0
 * date 2017-02-10
 * 获取滑块验证码
-* JavaScript压缩工具：
+* JavaScript工具推荐：
 * http://tool.lu/js
 */
 (function ($) {
-    var __imgx = 0; //图片宽度
-    var __imgy = 0; //图片高度
-    var __spec = "";//图片尺寸
-    var __executename;//校验通过后执行的函数名
-    var __Verification;//验证码区域的div
-    $.fn.slide = function (imgspec, executename) {
+    var __imgx = 0, //图片宽度
+        __imgy = 0, //图片高度
+        __spec = "",//图片尺寸
+        __executename,//校验通过后执行的函数名
+        __codediv;//验证码区域的div
+    $.fn.slide = function (imgspec, exename) {
+        //校验参数
+        if (typeof imgspec === 'undefined') {
+            imgspec = "300*300";
+        }
+        if (typeof exename === 'undefined') {
+            exename = "";
+        }
         var div = this;
-        __Verification = div.attr("id");
+        __codediv = div.attr("id");
         __spec = imgspec;
-        __executename = executename;
+        __executename = exename;
         __init();
     };
     function __init() {
-        if (typeof (__spec) !== "string") {//spec类型必须为string
-            __spec = "300*300";
-        }
-        if (__spec == "")
+        if (__spec === "")
             __spec = "300*300";
         var _spec = __spec.split('*');
         __imgx = _spec[0];
         __imgy = _spec[1];
         CreadeCodeDiv();
-        $('#drag').drag(__executename, __imgx, __imgy, __Verification);
+        $('#drag').drag(__executename, __imgx, __imgy, __codediv);
         $.ajax({ //获取验证码
             type: "POST",
-            url: "./VerificationCode.ashx?action=getcode&spec=" + __spec,
-            dataType: "json",
+            url: "./VerificationCode.ashx?action=getcode",
+            dataType: "JSON",
             async: false,
-            data: { point: 0 },
+            data: { spec: __spec },
             success: function (result) {
-                if (result['state'] == -1) {
+                if (result['state'] === -1) {
                     return;
                 }
                 var errcode = result['errcode'];
-                if (errcode != 0) {
-                    document.getElementById(__Verification).innerHTML = "<span style='color:red'>验证码获取失败，" + result['errmsg'] + "</span>";
+                if (errcode !== 0) {
+                    document.getElementById(__codediv).innerHTML = "<span style='color:red'>验证码获取失败，" + result['errmsg'] + "</span>";
                 }
-                var yvalue = result['y'];
-                var small = result['small'];
-                var array = result['array'];
-                var normal = result['normal'];
+                var yvalue = result['y'], small = result['small'], array = result['array'], normal = result['normal'];
                 __imgx = result['imgx'];
                 __imgy = result['imgy'];
                 $(".cut_bg").css("background-image", "url(" + normal + ")");
@@ -84,10 +85,10 @@
     function indexOf(arr, str) {
         if (arr && arr.indexOf) return arr.indexOf(str);
         var len = arr.length;
-        for (var i = 0; i < len; i++) { if (arr[i] == str) return i; } return -1;
+        for (var i = 0; i < len; i++) { if (arr[i] === str) return i; } return -1;
     }
     function CreadeCodeDiv() {
-        var __codeDIV = document.getElementById('' + __Verification + '');
+        var __codeDIV = document.getElementById(__codediv);
         __codeDIV.innerHTML = '';
         var __codeHTML = "<div style='width:" + __imgx + "px;height:" + __imgy + "px;'><div id='bb0'class='cut_bg'></div>"
             + "<div id='bb1'class='cut_bg'></div><div id='bb2'class='cut_bg'></div><div id='bb3'class='cut_bg'></div>"
@@ -104,16 +105,12 @@
 *滑块验证码
 */
 (function ($) {
-    $(".handler handler_bg").on('click', function (ev) {
-        var oEvent = ev || event;
-        console.log("x坐标是:" + oEvent.clientX + ",y坐标是:" + oEvent.clientY);
-    });
-    $.fn.drag = function (executename, imgx, imgy, __Verification) {
+    $.fn.drag = function (executename, imgx, imgy, __codediv) {
         var x, drag = this, isMove = false, defaults = {
         };
         //添加背景，文字，滑块
         var html = '<div class="drag_bg"></div><div class="drag_text" onselectstart="return false;" unselectable="on">拖动图片验证</div>'
-            + '<div class="handler handler_bg"><a href="javascript:;" onclick="$(' + __Verification + ').slide(\'' + imgx + '*' + imgy + '\',\'' + executename + '\')"'
+            + '<div class="handler handler_bg"><a href="javascript:;" onclick="$(' + __codediv + ').slide(\'' + imgx + '*' + imgy + '\',\'' + executename + '\')"'
             + ' title="点击刷新验证码" style="width:16px;height:16px;"><div class="refesh_bg"></div></a></div>';
         this.append(html);
         var handler = drag.find('.handler');
@@ -138,18 +135,18 @@
          *滑块x轴位置等于鼠标移动距离
          */
         handler.mousedown(function (e) { dragstart(e.pageX); });//鼠标按下
-        handler.mousemove(function (e) { dragmoving(e.pageX); });//移动鼠标
-        handler.mouseup(function (e) { dragmovend(e.pageX); });//松开鼠标
+        $(document).mousemove(function (e) { dragmoving(e.pageX); });//移动鼠标
+        $(document).mouseup(function (e) { dragmovend(e.pageX); });//松开鼠标
         handler.mouseout(function (e) { });//鼠标移出元素
         handler.on("touchstart", function (e) { dragstart(e.originalEvent.touches[0].pageX); });//手指按下
-        handler.on("touchmove", function (e) { dragmoving(e.originalEvent.touches[0].pageX); });//手指移动
-        handler.on("touchend", function (e) { dragmovend(e.originalEvent.changedTouches[0].pageX); });//手指松开
+        $(document).on("touchmove", function (e) { dragmoving(e.originalEvent.touches[0].pageX); });//手指移动
+        $(document).on("touchend", function (e) { dragmovend(e.originalEvent.changedTouches[0].pageX); });//手指松开
         //鼠标/手指移动过程
         function dragmoving(thisx) {
             var _x = thisx - x;
             if (isMove) {
-                $xy_img.css({ 'left': _x });
                 if (_x > 0 && _x <= maxWidth) {
+                    $xy_img.css({ 'left': _x });
                     $(".refesh_bg").hide();
                     handler.css({ 'left': _x });
                     drag_bg.css({ 'width': _x });
@@ -162,7 +159,7 @@
         //鼠标/手指移动结束
         function dragmovend(thisx) {
             isMove = false;
-            if (isNaN(x) || x == undefined) {
+            if (isNaN(x) || x === undefined) {
                 return;
             }
             var _x = thisx - x;
@@ -177,16 +174,16 @@
             $.ajax({ //校验
                 type: "POST",
                 url: "./VerificationCode.ashx?action=check",
-                dataType: "json",
+                dataType: "JSON",
                 async: false,
                 data:
                 {
                     point: _x,
-                    timespan: (t2 - t1),
+                    timespan: t2 - t1,
                     datelist: arrayDate.join("|")
                 },
                 success: function (result) {
-                    if (result['state'] == 0) {
+                    if (result['state'] === 0) {
                         for (var i = 1; 4 >= i; i++) {
                             $xy_img.animate({ left: _x - (40 - 10 * i) }, 50);
                             $xy_img.animate({ left: _x + 2 * (40 - 10 * i) }, 50, function () {
@@ -197,13 +194,20 @@
                         drag_bg.css({ 'width': maxWidth });
                         $xy_img.removeClass('xy_img_bord');
                         $xy_img.css("border", "1px solid rgb(255,255,255)");
+                        console.log("VerificationCode Success");
                         dragOk();
                     } else {
                         $(".refesh_bg").show();
                         $xy_img.css({ 'left': 0 });
                         handler.css({ 'left': 0 });
                         drag_bg.css({ 'width': 0 });
-                        if (result['msg'] > 6) __init();
+                        if (result['msg'] > 6) {
+                            $("#" + __codediv).slide(imgx + "*" + imgy, executename);
+                            console.log("VerificationCode Refresh!");
+                        }
+                        else {
+                            console.log("Failure, Number:" + result['msg']);
+                        }
                     }
                 },
                 beforeSend: function () {
@@ -219,7 +223,7 @@
             $(document).unbind('mousemove');
             $(document).unbind('mouseup');
             $(".refesh_bg").hide();
-            if (executename != '')
+            if (executename !== '')
                 window[executename]();
         }
     };
