@@ -4,24 +4,29 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <title>C#滑块验证码</title>
+    <link rel="shortcut icon" href="favicon.ico">
     <link href="./src/drag.css" rel="stylesheet" type="text/css" />
     <script src="./src/jquery-1.7.2.min.js" type="text/javascript"></script>
     <script src="./src/drag.js?v=1.0" type="text/javascript"></script>
     <script type="text/javascript">
         $(function () {
-            //参数一 验证码图片规格 "300*300", "300*200", "200*100"
-            //参数二 校验通过时执行的函数名
-            //绑定的div width与图片宽一致 height为图片高加34像素
+            /******************************************************
+             * 参数一 验证码图片规格 "300*300", "300*200", "200*100"
+             * 参数二 校验通过时执行的函数名
+             * 绑定的div width与图片宽一致 height为图片高加34像素
+             ******************************************************/
             $("#__Verification").slide("200*100", "test");
         })
         function test() {
-            console.log("Verification Success!!!");
+            console.log("%c\u606d\u559c\u4f60\u002c\u6821\u9a8c\u901a\u8fc7\u0021",
+                'background:rgba(255,249,0,.1);color:#00ff21;font-size:40px;');
         }
     </script>
 </head>
-<body>
-    <br />
-    <div id="__Verification" style=" width:300px; height:334px;">
+<body style="margin:30px auto auto 30px;">
+    <div id="__Verification" style=" width:200px; height:134px;">
     </div>
+    <p></p>
+    <h1 style="color:rgba(0, 255, 33, 0.7);">eatage</h1>
 </body>
 </html>

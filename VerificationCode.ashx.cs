@@ -218,11 +218,11 @@ namespace VerificationCode
             HttpContext.Current.Session["code_errornum"] = null;
             int[] a = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
             int[] array = a.OrderBy(x => Guid.NewGuid()).ToArray();
-            Bitmap bmp = new Bitmap(path + (new Random()).Next(0, _ImgNum - 1) + ".png");
-            string ls_small = "data:image/png;base64," + ImgToBase64String(cutImage(bmp, _shearSize, _shearSize, _PositionX, _PositionY));
+            Bitmap bmp = new Bitmap(path + (new Random()).Next(0, _ImgNum - 1) + ".jpg");
+            string ls_small = "data:image/jpg;base64," + ImgToBase64String(cutImage(bmp, _shearSize, _shearSize, _PositionX, _PositionY));
             Bitmap lb_normal = GetNewBitMap(bmp, _shearSize, _shearSize, _PositionX, _PositionY);
-            string ls_confusion = "data:image/png;base64," + ImgToBase64String(ConfusionImage(array, lb_normal));
-            JObject jObject = new JObject();// JObject.Parse(GetJson);
+            string ls_confusion = "data:image/jpg;base64," + ImgToBase64String(ConfusionImage(array, lb_normal));
+            JObject jObject = new JObject();
             jObject["errcode"] = 0;
             jObject["y"] = _PositionY;
             jObject["array"] = string.Join(",", array);
@@ -361,13 +361,12 @@ namespace VerificationCode
             try
             {
                 MemoryStream ms = new MemoryStream();
-                bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
                 byte[] arr = new byte[ms.Length];
                 ms.Position = 0;
                 ms.Read(arr, 0, (int)ms.Length);
                 ms.Close();
-                String strbaser64 = Convert.ToBase64String(arr);
-                return strbaser64;
+                return Convert.ToBase64String(arr);
             }
             catch
             {

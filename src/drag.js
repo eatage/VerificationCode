@@ -16,15 +16,25 @@
         if (typeof imgspec === 'undefined') {
             imgspec = "300*300";
         }
+        else if (typeof imgspec !== "string") {
+            imgspec = "300*300";
+        }
         if (typeof exename === 'undefined') {
+            exename = "";
+        }
+        else if (typeof exename !== "string") {
             exename = "";
         }
         var div = this;
         __codediv = div.attr("id");
         __spec = imgspec;
         __executename = exename;
+        if (__codediv === undefined) {
+            throw div.selector + ' does not exist';
+        }
         __init();
     };
+    //载入
     function __init() {
         if (__spec === "")
             __spec = "300*300";
@@ -37,7 +47,7 @@
             type: "POST",
             url: "./VerificationCode.ashx?action=getcode",
             dataType: "JSON",
-            async: false,
+            async: true,
             data: { spec: __spec },
             success: function (result) {
                 if (result['state'] === -1) {
@@ -45,7 +55,9 @@
                 }
                 var errcode = result['errcode'];
                 if (errcode !== 0) {
-                    document.getElementById(__codediv).innerHTML = "<span style='color:red'>验证码获取失败，" + result['errmsg'] + "</span>";
+                    document.getElementById(__codediv).innerHTML =
+                        "<span style='color:red'>\u9a8c\u8bc1\u7801\u83b7\u53d6\u5931\u8d25\u002c"
+                        + result['errmsg'] + "</span>";
                 }
                 var yvalue = result['y'], small = result['small'], array = result['array'], normal = result['normal'];
                 __imgx = result['imgx'];
@@ -78,7 +90,6 @@
                 }
             },
             beforeSend: function () {
-
             }
         });
     }
@@ -87,17 +98,16 @@
         var len = arr.length;
         for (var i = 0; i < len; i++) { if (arr[i] === str) return i; } return -1;
     }
+    //绘制验证码结构
     function CreadeCodeDiv() {
         var __codeDIV = document.getElementById(__codediv);
         __codeDIV.innerHTML = '';
-        var __codeHTML = "<div style='width:" + __imgx + "px;height:" + __imgy + "px;'><div id='bb0'class='cut_bg'></div>"
-            + "<div id='bb1'class='cut_bg'></div><div id='bb2'class='cut_bg'></div><div id='bb3'class='cut_bg'></div>"
-            + "<div id='bb4'class='cut_bg'></div><div id='bb5'class='cut_bg'></div><div id='bb6'class='cut_bg'></div>"
-            + "<div id='bb7'class='cut_bg'></div><div id='bb8'class='cut_bg'></div><div id='bb9'class='cut_bg'></div>"
-            + "<div id='bb10'class='cut_bg'></div><div id='bb11'class='cut_bg'></div><div id='bb12'class='cut_bg'></div>"
-            + "<div id='bb13'class='cut_bg'></div><div id='bb14'class='cut_bg'></div><div id='bb15'class='cut_bg'></div>"
-            + "<div id='bb16'class='cut_bg'></div><div id='bb17'class='cut_bg'></div><div id='bb18'class='cut_bg'></div>"
-            + "<div id='bb19'class='cut_bg'></div><div id='xy_img'class='xy_img_bord'></div></div><div id='drag'></div>";
+        var __codeHTML = "<div style='width:" + __imgx + "px;height:" + __imgy + "px;background-color:#e8e8e8;'>";
+        for (var i = 0; i < 20; i++) {
+            //20张小图组成完整的验证码图片
+            __codeHTML += "<div id='bb" + i + "'class='cut_bg'></div>";
+        }
+        __codeHTML += "<div id='xy_img'class='xy_img_bord'></div></div><div id='drag'></div>";
         __codeDIV.innerHTML = __codeHTML;
     }
 })(jQuery);
@@ -106,27 +116,25 @@
 */
 (function ($) {
     $.fn.drag = function (executename, imgx, imgy, __codediv) {
-        var x, drag = this, isMove = false, defaults = {
-        };
+        var x, drag = this, isMove = false;
         //添加背景，文字，滑块
-        var html = '<div class="drag_bg"></div><div class="drag_text" onselectstart="return false;" unselectable="on">拖动图片验证</div>'
-            + '<div class="handler handler_bg"><a href="javascript:;" onclick="$(' + __codediv + ').slide(\'' + imgx + '*' + imgy + '\',\'' + executename + '\')"'
-            + ' title="点击刷新验证码" style="width:16px;height:16px;"><div class="refesh_bg"></div></a></div>';
+        var html = '<div class="drag_bg"></div><div class="drag_text" onselectstart="return false;"'
+            + 'unselectable="on">\u62d6\u52a8\u56fe\u7247\u9a8c\u8bc1</div>'
+            + '<div class="handler handler_bg"></div><a href="javascript:;" onclick="console.log(\''
+            + '%cVerificationCode Refresh\',\'color:blue\');$(' + __codediv + ').slide(\'' + imgx
+            + '*' + imgy + '\',\'' + executename + '\')"'
+            + ' title="\u70b9\u51fb\u5237\u65b0\u9a8c\u8bc1\u7801"'
+            + 'style="width:16px;height:16px;"><div class="refesh_bg"></div></a>';
         this.append(html);
-        var handler = drag.find('.handler');
-        var drag_bg = drag.find('.drag_bg');
-        var text = drag.find('.drag_text');
-        var maxWidth = imgx - 40; // drag.width() - handler.width();  //能滑动的最大间距
-        var t1 = new Date(); //开始滑动时间
-        var t2 = new Date(); //结束滑动时间
+        $("#drag .drag_text").css("width", imgx);
+        $(".refesh_bg").css("left", imgx - 25);
+        var handler = drag.find('.handler'),
+         drag_bg = drag.find('.drag_bg'),
+         text = drag.find('.drag_text'),
+         maxWidth = imgx - 40, // drag.width() - handler.width();  //能滑动的最大间距
+         t1 = new Date(), //开始滑动时间
+         t2 = new Date(); //结束滑动时间
 
-        //开始滑动
-        function dragstart(thisx) {
-            $xy_img.show();
-            isMove = true;
-            x = thisx - parseInt(handler.css('left'), 10);
-            t1 = new Date();
-        }
         var $xy_img = $("#xy_img");
         var arrayDate = new Array();//鼠标/手指移动轨迹
         /*
@@ -141,6 +149,13 @@
         handler.on("touchstart", function (e) { dragstart(e.originalEvent.touches[0].pageX); });//手指按下
         $(document).on("touchmove", function (e) { dragmoving(e.originalEvent.touches[0].pageX); });//手指移动
         $(document).on("touchend", function (e) { dragmovend(e.originalEvent.changedTouches[0].pageX); });//手指松开
+        //鼠标/手指开始滑动
+        function dragstart(thisx) {
+            $xy_img.show();
+            isMove = true;
+            x = thisx - parseInt(handler.css('left'), 10);
+            t1 = new Date();
+        }
         //鼠标/手指移动过程
         function dragmoving(thisx) {
             var _x = thisx - x;
@@ -158,6 +173,9 @@
         }
         //鼠标/手指移动结束
         function dragmovend(thisx) {
+            if (!isMove) {//没有滑动过程 直接返回
+                return;
+            }
             isMove = false;
             if (isNaN(x) || x === undefined) {
                 return;
@@ -175,7 +193,7 @@
                 type: "POST",
                 url: "./VerificationCode.ashx?action=check",
                 dataType: "JSON",
-                async: false,
+                async: true,
                 data:
                 {
                     point: _x,
@@ -184,6 +202,7 @@
                 },
                 success: function (result) {
                     if (result['state'] === 0) {
+                        //抖动效果
                         for (var i = 1; 4 >= i; i++) {
                             $xy_img.animate({ left: _x - (40 - 10 * i) }, 50);
                             $xy_img.animate({ left: _x + 2 * (40 - 10 * i) }, 50, function () {
@@ -194,7 +213,7 @@
                         drag_bg.css({ 'width': maxWidth });
                         $xy_img.removeClass('xy_img_bord');
                         $xy_img.css("border", "1px solid rgb(255,255,255)");
-                        console.log("VerificationCode Success");
+                        console.log("%cVerificationCode Verified","color:green");
                         dragOk();
                     } else {
                         $(".refesh_bg").show();
@@ -202,11 +221,12 @@
                         handler.css({ 'left': 0 });
                         drag_bg.css({ 'width': 0 });
                         if (result['msg'] > 6) {
+                            //超过最大错误次数限制 刷新验证码
                             $("#" + __codediv).slide(imgx + "*" + imgy, executename);
-                            console.log("VerificationCode Refresh!");
+                            console.log("%cVerificationCode Refresh", "color:blue");
                         }
                         else {
-                            console.log("Failure, Number:" + result['msg']);
+                            console.log("%cNumber of errors: " + result['msg'],"color:red");
                         }
                     }
                 },
@@ -217,7 +237,7 @@
         //清空事件
         function dragOk() {
             handler.removeClass('handler_bg').addClass('handler_ok_bg');
-            text.text('验证通过');
+            text.text('\u9a8c\u8bc1\u901a\u8fc7');
             drag.css({ 'color': '#fff' });
             handler.unbind('mousedown');
             $(document).unbind('mousemove');
