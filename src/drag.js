@@ -213,6 +213,7 @@
                         drag_bg.css({ 'width': maxWidth });
                         $xy_img.removeClass('xy_img_bord');
                         $xy_img.css("border", "1px solid rgb(255,255,255)");
+                        $("#drag a").remove();
                         console.log("%cVerificationCode Verified","color:green");
                         dragOk();
                     } else {
