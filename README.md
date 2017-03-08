@@ -7,3 +7,15 @@
 #### 可自行定制 
 #### SQLite数据库保存用户校验过程数据，为辨别机器人提供参考
 #### 演示地址：[DEMO](http://120.76.164.184/vcode/demo.htm)
+
+```flow
+st=>start: 开始
+e=>end: 结束
+op=>operation: 选取图库中的图片
+op1=>operation: 裁剪掉一个小图片,并保存裁剪位置
+cond=>condition: Yes or No?
+
+st->op->op1->cond
+cond(yes)->e
+cond(no)->op
+```
