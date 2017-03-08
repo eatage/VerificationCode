@@ -141,16 +141,37 @@
          *鼠标/手指在上下文移动时，
          *移动距离大于0小于最大间距
          *滑块x轴位置等于鼠标移动距离
+         *绑定document防止鼠标/手指
+         *离开滑块时监听停止
          */
-        handler.mousedown(function (e) { dragstart(e.pageX); });//鼠标按下
-        $(document).mousemove(function (e) { dragmoving(e.pageX); });//移动鼠标
-        $(document).mouseup(function (e) { dragmovend(e.pageX); });//松开鼠标
+        handler.mousedown(function (e) {
+            dragstart(e.pageX);
+        });//鼠标按下
+        $(document).mousemove(function (e) {
+            dragmoving(e.pageX);
+        });//移动鼠标
+        $(document).mouseup(function (e) {
+            dragmovend(e.pageX);
+        });//松开鼠标
         handler.mouseout(function (e) { });//鼠标移出元素
-        handler.on("touchstart", function (e) { dragstart(e.originalEvent.touches[0].pageX); });//手指按下
-        $(document).on("touchmove", function (e) { dragmoving(e.originalEvent.touches[0].pageX); });//手指移动
-        $(document).on("touchend", function (e) { dragmovend(e.originalEvent.changedTouches[0].pageX); });//手指松开
+        handler.on("touchstart", function (e) {
+            dragstart(e.originalEvent.touches[0].pageX);
+            //阻止页面的滑动默认事件
+            document.addEventListener("touchmove", defaultEvent, false);
+        });//手指按下
+        $(document).on("touchmove", function (e) {
+            dragmoving(e.originalEvent.touches[0].pageX);
+        });//手指移动
+        $(document).on("touchend", function (e) {
+            dragmovend(e.originalEvent.changedTouches[0].pageX);
+            //阻止页面的滑动默认事件
+            document.removeEventListener("touchmove", defaultEvent, false);
+        });//手指松开
         //鼠标/手指开始滑动
         function dragstart(thisx) {
+            if (thisx >= maxWidth) {
+                return;
+            }
             $xy_img.show();
             isMove = true;
             x = thisx - parseInt(handler.css('left'), 10);
@@ -180,7 +201,7 @@
             if (isNaN(x) || x === undefined) {
                 return;
             }
-            var _x = thisx - x;
+            var _x = Math.round(thisx - x);//取整
             if (_x < 10) {
                 $(".refesh_bg").show();
                 $xy_img.css({ 'left': 0 });
@@ -214,7 +235,7 @@
                         $xy_img.removeClass('xy_img_bord');
                         $xy_img.css("border", "1px solid rgb(255,255,255)");
                         $("#drag a").remove();
-                        console.log("%cVerificationCode Verified","color:green");
+                        console.log("%cVerificationCode Verified", "color:green");
                         dragOk();
                     } else {
                         $(".refesh_bg").show();
@@ -227,13 +248,18 @@
                             console.log("%cVerificationCode Refresh", "color:blue");
                         }
                         else {
-                            console.log("%cNumber of errors: " + result['msg'],"color:red");
+                            console.log("%cNumber of errors: " + result['msg'], "color:red");
                         }
                     }
                 },
                 beforeSend: function () {
                 }
             });
+        }
+        //取消事件的默认动作 
+        //防止一些Android浏览器页面跟随滑动的情况
+        function defaultEvent(e) {
+            e.preventDefault();
         }
         //清空事件
         function dragOk() {
