@@ -6,5 +6,4 @@
 #### 已完成简单的验证 
 #### 可自行定制 
 #### SQLite数据库保存用户校验过程数据，为辨别机器人提供参考
-#### 演示地址：
-#### <a href="http://120.76.164.184/vcode/demo.htm" target="_blank">
+#### 演示地址：[visist it](http://120.76.164.184/vcode/demo.htm)
