@@ -3,17 +3,18 @@
 
 ### VerificationCode简介
 
-> <p>用户拖动滑块完成时完成校验，支持PC端及移动端。并在后台保存用户校验过程的时间、精度、滑动轨迹等信息。</p>
-> <p>输出的验证码为JSON格式，其中大图片是将原图裁剪成横向10份纵向2分共20张图片随机混淆拼接而成的，原图通过在前端移位还原，混淆信息带在JSON上</p>
-> **JSON格式说明：**
-> &nbsp;&nbsp;&nbsp;&nbsp;*errcode：状态码*
-> &nbsp;&nbsp;&nbsp;&nbsp;*y：裁剪的小图相对左上角的y轴坐标*
-> &nbsp;&nbsp;&nbsp;&nbsp;*array：验证码图片混淆规律*
-> &nbsp;&nbsp;&nbsp;&nbsp;*imgx：验证码图片宽度*
-> &nbsp;&nbsp;&nbsp;&nbsp;*imgy：验证码图片高度*
-> &nbsp;&nbsp;&nbsp;&nbsp;*small：裁剪的小图片*
-> &nbsp;&nbsp;&nbsp;&nbsp;*imgy：验证码混淆后的图片*
+>用户拖动滑块完成时完成校验，支持PC端及移动端。并在后台保存用户校验过程的时间、精度、滑动轨迹等信息。</br>
+>输出的验证码为JSON格式，其中大图片是将原图裁剪成横向10份纵向2分共20张图片随机混淆拼接而成的，原图通过在前端移位还原，混淆信息带在JSON上</br>
+> **JSON格式说明：**</br>
+>&nbsp;&nbsp;&nbsp;&nbsp;*errcode：状态码*</br>
+>&nbsp;&nbsp;&nbsp;&nbsp;*y：裁剪的小图相对左上角的y轴坐标*</br>
+>&nbsp;&nbsp;&nbsp;&nbsp;*array：验证码图片混淆规律*</br>
+>&nbsp;&nbsp;&nbsp;&nbsp;*imgx：验证码图片宽度*</br>
+>&nbsp;&nbsp;&nbsp;&nbsp;*imgy：验证码图片高度*</br>
+>&nbsp;&nbsp;&nbsp;&nbsp;*small：裁剪的小图片*</br>
+>&nbsp;&nbsp;&nbsp;&nbsp;*imgy：验证码混淆后的图片*</br>
 >**兼容信息：**兼容主流浏览器，IPhone端的Safari、QQ内置浏览器、微信内置浏览器测试通过，Android端未测试
+
 #### JSON格式示例
 ```  json
 {
