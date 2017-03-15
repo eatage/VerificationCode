@@ -41,6 +41,8 @@
         var _spec = __spec.split('*');
         __imgx = _spec[0];
         __imgy = _spec[1];
+        $("#" + __codediv).css("width", __imgx);
+        $("#" + __codediv).css("height", parseInt(__imgy) + 34);
         CreadeCodeDiv();
         $('#drag').drag(__executename, __imgx, __imgy, __codediv);
         $.ajax({ //获取验证码
@@ -69,6 +71,7 @@
                 $("#drag .drag_text").css("width", __imgx);
                 $(".cut_bg").css("width", __imgx / 10);
                 $(".cut_bg").css("height", __imgy / 2);
+                $(".refesh_bg").show();
                 $(".refesh_bg").css("left", __imgx - 25);
                 var bgarray = array.split(',');
                 //还原图片
@@ -242,7 +245,7 @@
                         $xy_img.css({ 'left': 0 });
                         handler.css({ 'left': 0 });
                         drag_bg.css({ 'width': 0 });
-                        if (result['msg'] > 6) {
+                        if (result['msg'] > 4) {
                             //超过最大错误次数限制 刷新验证码
                             $("#" + __codediv).slide(imgx + "*" + imgy, executename);
                             console.log("%cVerificationCode Refresh", "color:blue");

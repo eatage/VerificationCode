@@ -48,6 +48,8 @@ namespace VerificationCode
         private const int _deviationPx = 2;
         //是否跨域访问 在将项目做成第三方使用时可用跨域解决方案 所有的session替换成可共用的变量(Redis)
         private Boolean _isCallback = false;
+        //最大错误次数
+        private const int _MaxErrorNum = 4;
         #endregion
 
         public void ProcessRequest(HttpContext context)
@@ -147,6 +149,12 @@ namespace VerificationCode
                 }
                 catch { li_count = 0; }
                 li_count++;
+                if (li_count > _MaxErrorNum)
+                {
+                    //超过最大错误次数后不再校验
+                    HttpContext.Current.Session["code"] = null;
+                    Write(context, "{\"state\":-1,\"msg\":" + li_count + "}"); return;
+                }
                 HttpContext.Current.Session["code_errornum"] = li_count;
                 //返回错误次数
                 Write(context, "{\"state\":-1,\"msg\":" + li_count + "}"); return;
