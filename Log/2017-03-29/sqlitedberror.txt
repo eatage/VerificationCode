@@ -1,0 +1,12 @@
+Action:sqlTime:16:25:53.786
+Message:SQLite error
+near "from": syntax error
+Sql:select count(* from data
+-----------------------
+
+Action:sqlTime:16:26:01.406
+Message:SQLite error
+near "from": syntax error
+Sql:select count(* from data
+-----------------------
+

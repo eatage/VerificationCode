@@ -50,7 +50,7 @@ namespace VerificationCode
         /// </summary>
         /// <param name="sql">sql字符串</param>
         /// <param name="as_param">参数 如as_param1="@id=123"</param>
-        /// <returns></returns>
+        /// <returns>返回受影响行数 错误时返回-1</returns>
         public static int ExecuteNonQuery(string sql, params string[] as_param)
         {
             if (!isCaseSensitive)
@@ -64,11 +64,8 @@ namespace VerificationCode
                     conn.Open();
                     SQLiteParameter[] P = GetSQLiteParameter(as_param);
                     if (P != null)
-                    {
                         cmd.Parameters.AddRange(P);
-                    }
-                    int li_row = cmd.ExecuteNonQuery();
-                    return li_row;
+                    return cmd.ExecuteNonQuery();
                 }
             }
             catch (Exception ex)
@@ -85,7 +82,7 @@ namespace VerificationCode
         /// <param name="as_connStr">连接字符串</param>
         /// <param name="sql">sql字符串</param>
         /// <param name="as_param">参数 如as_param1="@id=123"</param>
-        /// <returns></returns>
+        /// <returns>返回受影响行数 错误时返回-1</returns>
         public static int ExecuteNonQuery(CommandType type, string as_connStr, string sql, params string[] as_param)
         {
             if (!isCaseSensitive)
@@ -100,11 +97,8 @@ namespace VerificationCode
                     conn.Open();
                     SQLiteParameter[] P = GetSQLiteParameter(as_param);
                     if (P != null)
-                    {
                         cmd.Parameters.AddRange(P);
-                    }
-                    int li_row = cmd.ExecuteNonQuery();
-                    return li_row;
+                    return cmd.ExecuteNonQuery();
                 }
             }
             catch (Exception ex)
@@ -119,7 +113,7 @@ namespace VerificationCode
         /// </summary>
         /// <param name="sql">sql字符串</param>
         /// <param name="as_params">参数</param>
-        /// <returns></returns>
+        /// <returns>返回受影响行数 错误时返回-1</returns>
         public static int ExecuteNonQuery(string sql, SQLiteParameter[] as_params)
         {
             if (!isCaseSensitive)
@@ -133,11 +127,8 @@ namespace VerificationCode
                     conn.Open();
                     SQLiteParameter[] P = as_params;
                     if (P != null)
-                    {
                         cmd.Parameters.AddRange(P);
-                    }
-                    int li_row = cmd.ExecuteNonQuery();
-                    return li_row;
+                    return cmd.ExecuteNonQuery();
                 }
             }
             catch (Exception ex)
@@ -154,7 +145,7 @@ namespace VerificationCode
         /// <param name="as_connStr">连接字符串</param>
         /// <param name="sql">sql字符串</param>
         /// <param name="as_params">参数</param>
-        /// <returns></returns>
+        /// <returns>返回受影响行数 错误时返回-1</returns>
         public static int ExecuteNonQuery(CommandType type, string as_connStr, string sql, SQLiteParameter[] as_params)
         {
             if (!isCaseSensitive)
@@ -169,11 +160,8 @@ namespace VerificationCode
                     conn.Open();
                     SQLiteParameter[] P = as_params;
                     if (P != null)
-                    {
                         cmd.Parameters.AddRange(P);
-                    }
-                    int li_row = cmd.ExecuteNonQuery();
-                    return li_row;
+                    return cmd.ExecuteNonQuery();
                 }
             }
             catch (Exception ex)
@@ -202,9 +190,7 @@ namespace VerificationCode
                     conn.Open();
                     SQLiteParameter[] P = GetSQLiteParameter(as_param);
                     if (P != null)
-                    {
                         cmd.Parameters.AddRange(P);
-                    }
                     SQLiteDataReader reader = cmd.ExecuteReader();
                     if (reader.Read())
                         return reader[0].ToString();
@@ -240,9 +226,8 @@ namespace VerificationCode
                     conn.Open();
                     SQLiteParameter[] P = GetSQLiteParameter(as_param);
                     if (P != null)
-                    {
                         cmd.Parameters.AddRange(P);
-                    }
+
                     SQLiteDataReader reader = cmd.ExecuteReader();
                     if (reader.Read())
                         return reader[0].ToString();
@@ -275,9 +260,7 @@ namespace VerificationCode
                     conn.Open();
                     SQLiteParameter[] P = as_params;
                     if (P != null)
-                    {
                         cmd.Parameters.AddRange(P);
-                    }
                     SQLiteDataReader reader = cmd.ExecuteReader();
                     if (reader.Read())
                         return reader[0].ToString();
@@ -313,9 +296,7 @@ namespace VerificationCode
                     conn.Open();
                     SQLiteParameter[] P = as_params;
                     if (P != null)
-                    {
                         cmd.Parameters.AddRange(P);
-                    }
                     SQLiteDataReader reader = cmd.ExecuteReader();
                     if (reader.Read())
                         return reader[0].ToString();
@@ -334,6 +315,7 @@ namespace VerificationCode
         /// </summary>
         /// <param name="sql">sql字符串</param>
         /// <param name="as_param">参数 如as_param1="@id=123"</param>
+        /// <returns>返回整数 错误时返回-1</returns>
         public static int ExecuteScalarNum(string sql, params string[] as_param)
         {
             if (!isCaseSensitive)
@@ -347,9 +329,7 @@ namespace VerificationCode
                     conn.Open();
                     SQLiteParameter[] P = GetSQLiteParameter(as_param);
                     if (P != null)
-                    {
                         cmd.Parameters.AddRange(P);
-                    }
                     SQLiteDataReader reader = cmd.ExecuteReader();
                     if (reader.Read())
                         return int.Parse(reader[0].ToString());
@@ -371,6 +351,7 @@ namespace VerificationCode
         /// <param name="as_connStr">连接字符串</param>
         /// <param name="sql">sql字符串</param>
         /// <param name="as_param">参数 如as_param1="@id=123"</param>
+        /// <returns>返回整数 错误时返回-1</returns>
         public static int ExecuteScalarNum(CommandType type, string as_connStr, string sql, params string[] as_param)
         {
             if (!isCaseSensitive)
@@ -385,9 +366,7 @@ namespace VerificationCode
                     conn.Open();
                     SQLiteParameter[] P = GetSQLiteParameter(as_param);
                     if (P != null)
-                    {
                         cmd.Parameters.AddRange(P);
-                    }
                     SQLiteDataReader reader = cmd.ExecuteReader();
                     if (reader.Read())
                         return int.Parse(reader[0].ToString());
@@ -407,6 +386,7 @@ namespace VerificationCode
         /// </summary>
         /// <param name="sql">sql字符串</param>
         /// <param name="as_params">参数</param>
+        /// <returns>返回整数 错误时返回-1</returns>
         public static int ExecuteScalarNum(string sql, SQLiteParameter[] as_params)
         {
             if (!isCaseSensitive)
@@ -420,9 +400,7 @@ namespace VerificationCode
                     conn.Open();
                     SQLiteParameter[] P = as_params;
                     if (P != null)
-                    {
                         cmd.Parameters.AddRange(P);
-                    }
                     SQLiteDataReader reader = cmd.ExecuteReader();
                     if (reader.Read())
                         return int.Parse(reader[0].ToString());
@@ -444,6 +422,7 @@ namespace VerificationCode
         /// <param name="as_connStr">连接字符串</param>
         /// <param name="sql">sql字符串</param>
         /// <param name="as_params">参数</param>
+        /// <returns>返回整数 错误时返回-1</returns>
         public static int ExecuteScalarNum(CommandType type, string as_connStr, string sql, SQLiteParameter[] as_params)
         {
             if (!isCaseSensitive)
@@ -458,9 +437,7 @@ namespace VerificationCode
                     conn.Open();
                     SQLiteParameter[] P = as_params;
                     if (P != null)
-                    {
                         cmd.Parameters.AddRange(P);
-                    }
                     SQLiteDataReader reader = cmd.ExecuteReader();
                     if (reader.Read())
                         return int.Parse(reader[0].ToString());
@@ -493,9 +470,7 @@ namespace VerificationCode
                     conn.Open();
                     SQLiteParameter[] P = GetSQLiteParameter(as_param);
                     if (P != null)
-                    {
                         cmd.Parameters.AddRange(P);
-                    }
                     SQLiteDataReader reader = cmd.ExecuteReader();
                     if (reader.Read())
                         return reader;
@@ -531,9 +506,7 @@ namespace VerificationCode
                     conn.Open();
                     SQLiteParameter[] P = GetSQLiteParameter(as_param);
                     if (P != null)
-                    {
                         cmd.Parameters.AddRange(P);
-                    }
                     SQLiteDataReader reader = cmd.ExecuteReader();
                     if (reader.Read())
                         return reader;
@@ -566,9 +539,7 @@ namespace VerificationCode
                     conn.Open();
                     SQLiteParameter[] P = as_params;
                     if (P != null)
-                    {
                         cmd.Parameters.AddRange(P);
-                    }
                     SQLiteDataReader reader = cmd.ExecuteReader();
                     if (reader.Read())
                         return reader;
@@ -604,9 +575,7 @@ namespace VerificationCode
                     conn.Open();
                     SQLiteParameter[] P = as_params;
                     if (P != null)
-                    {
                         cmd.Parameters.AddRange(P);
-                    }
                     SQLiteDataReader reader = cmd.ExecuteReader();
                     if (reader.Read())
                         return reader;
@@ -635,16 +604,13 @@ namespace VerificationCode
             try
             {
                 DataTable ldt = new DataTable();
-
                 using (conn = new SQLiteConnection(dbConnection))
                 {
                     SQLiteCommand cmd = new SQLiteCommand(sql, conn);
                     conn.Open();
                     SQLiteParameter[] P = GetSQLiteParameter(as_param);
                     if (P != null)
-                    {
                         cmd.Parameters.AddRange(P);
-                    }
                     using (SQLiteDataAdapter sda = new SQLiteDataAdapter(cmd))
                     {
                         sda.Fill(ldt);
@@ -710,9 +676,7 @@ namespace VerificationCode
                     conn.Open();
                     SQLiteParameter[] P = GetSQLiteParameter(as_param);
                     if (P != null)
-                    {
                         cmd.Parameters.AddRange(P);
-                    }
                     using (SQLiteDataAdapter sda = new SQLiteDataAdapter(cmd))
                     {
                         sda.Fill(ldt);
@@ -748,9 +712,7 @@ namespace VerificationCode
                     conn.Open();
                     SQLiteParameter[] P = as_params;
                     if (P != null)
-                    {
                         cmd.Parameters.AddRange(P);
-                    }
                     using (SQLiteDataAdapter sda = new SQLiteDataAdapter(cmd))
                     {
                         sda.Fill(ldt);
@@ -789,9 +751,7 @@ namespace VerificationCode
                     conn.Open();
                     SQLiteParameter[] P = as_params;
                     if (P != null)
-                    {
                         cmd.Parameters.AddRange(P);
-                    }
                     using (SQLiteDataAdapter sda = new SQLiteDataAdapter(cmd))
                     {
                         sda.Fill(ldt);
@@ -818,25 +778,15 @@ namespace VerificationCode
         public static DataTable ExecuteDataTable(string sql, int ai_PageSize, int ai_PageIndex, ref int ai_totalrow, params string[] as_param)
         {
             if (ai_PageSize > 20000)
-            {
                 ai_PageSize = 20000;
-            }
             DataTable dt = new DataTable();
-
             if (sql.IndexOf("limit") > 0)
-            {
                 throw new Exception("分页方法内不允许含有limit命令");
-            }
-
             ai_totalrow = ExecuteScalarNum(sql);
             if (ai_PageIndex == 1)
-            {
                 sql += " limit 0," + ai_PageSize;
-            }
             else
-            {
                 sql += " limit " + (ai_PageIndex * ai_PageSize - 1) + "," + ai_PageSize;
-            }
             dt = ExecuteDataTable(sql, as_param);
             return dt;
         }
@@ -854,25 +804,15 @@ namespace VerificationCode
         public static DataTable ExecuteDataTable(CommandType type, string as_connStr, string sql, int ai_PageSize, int ai_PageIndex, ref int ai_totalrow, params string[] as_param)
         {
             if (ai_PageSize > 20000)
-            {
                 ai_PageSize = 20000;
-            }
             DataTable dt = new DataTable();
-
             if (sql.IndexOf("limit") > 0)
-            {
                 throw new Exception("分页方法内不允许含有limit命令");
-            }
-
             ai_totalrow = ExecuteScalarNum(type, as_connStr, sql);
             if (ai_PageIndex == 1)
-            {
                 sql += " limit 0," + ai_PageSize;
-            }
             else
-            {
                 sql += " limit " + (ai_PageIndex * ai_PageSize - 1) + "," + ai_PageSize;
-            }
             dt = ExecuteDataTable(type, as_connStr, sql, as_param);
             return dt;
         }
@@ -888,25 +828,15 @@ namespace VerificationCode
         public static DataTable ExecuteDataTable(string sql, int ai_PageSize, int ai_PageIndex, ref int ai_totalrow, SQLiteParameter[] as_params)
         {
             if (ai_PageSize > 20000)
-            {
                 ai_PageSize = 20000;
-            }
             DataTable dt = new DataTable();
-
             if (sql.IndexOf("limit") > 0)
-            {
                 throw new Exception("分页方法内不允许含有limit命令");
-            }
-
             ai_totalrow = ExecuteScalarNum(sql);
             if (ai_PageIndex == 1)
-            {
                 sql += " limit 0," + ai_PageSize;
-            }
             else
-            {
                 sql += " limit " + (ai_PageIndex * ai_PageSize - 1) + "," + ai_PageSize;
-            }
             dt = ExecuteDataTable(sql, as_params);
             return dt;
         }
@@ -924,25 +854,15 @@ namespace VerificationCode
         public static DataTable ExecuteDataTable(CommandType type, string as_connStr, string sql, int ai_PageSize, int ai_PageIndex, ref int ai_totalrow, SQLiteParameter[] as_params)
         {
             if (ai_PageSize > 20000)
-            {
                 ai_PageSize = 20000;
-            }
             DataTable dt = new DataTable();
-
             if (sql.IndexOf("limit") > 0)
-            {
                 throw new Exception("分页方法内不允许含有limit命令");
-            }
-
             ai_totalrow = ExecuteScalarNum(type, as_connStr, sql);
             if (ai_PageIndex == 1)
-            {
                 sql += " limit 0," + ai_PageSize;
-            }
             else
-            {
                 sql += " limit " + (ai_PageIndex * ai_PageSize - 1) + "," + ai_PageSize;
-            }
             dt = ExecuteDataTable(type, as_connStr, sql, as_params);
             return dt;
         }
@@ -1245,7 +1165,6 @@ namespace VerificationCode
                         }
                         ls_sql += " )";
                         ls_sql = ls_sql.Replace(", )", " )");
-
                         cmd.CommandText = ls_sql;
                         //cmd.Parameters[0].Value = i.ToString();
 
@@ -1303,14 +1222,10 @@ namespace VerificationCode
             DataTable ldt_tb = new DataTable();
             ldt_tb = ExecuteDataTable(sql);
             if (ldt_tb == null)
-            {
                 return false;
-            }
             DataRow[] l_row = ldt_tb.Select("name='" + as_ColName + "'");
             if (l_row.Length == 0)
-            {
                 return false;
-            }
             return true;
         }
         /// <summary>
@@ -1327,14 +1242,10 @@ namespace VerificationCode
             DataTable ldt_tb = new DataTable();
             ldt_tb = ExecuteDataTable(type, as_connStr, sql);
             if (ldt_tb == null)
-            {
                 return false;
-            }
             DataRow[] l_row = ldt_tb.Select("name='" + as_ColName + "'");
             if (l_row.Length == 0)
-            {
                 return false;
-            }
             return true;
         }
         /// <summary>
@@ -1348,26 +1259,18 @@ namespace VerificationCode
             if (as_param.Length == 0)
                 return null;
             SQLiteParameter[] P = new SQLiteParameter[as_param.Length];
-
             for (int i = 0; i < as_param.Length; i++)
             {
                 string ls_str = as_param[i];
                 if (string.IsNullOrEmpty(ls_str))
-                {
                     throw new ArgumentNullException("传入参数不允许为空,正确格式为：@id=123");
-                }
                 if (ls_str.IndexOf("=") == -1)
-                {
                     throw new ArgumentNullException("传入参数错误,正确格式为：@id=123");
-                }
                 string[] ls_strlist = ls_str.Split(new string[] { "=" }, StringSplitOptions.None);
                 if (ls_strlist.Length > 2)
-                {
                     throw new ArgumentNullException("传入参数错误,正确格式为：@id=123");
-                }
                 string ls_param = ls_strlist[0].Trim();
                 string ls_value = ls_strlist[1];
-
                 P[i] = new SQLiteParameter(ls_param, ls_value);
             }
             return P;
@@ -1782,7 +1685,7 @@ namespace VerificationCode
         }
     }
     /// <summary>
-    /// SQLite日志类
+    /// 日志类
     /// </summary>
     public class Log
     {
@@ -1794,12 +1697,13 @@ namespace VerificationCode
         /// <param name="FolderName">文件夹</param>
         public static void WriteLine(string strAction, string strText, string as_sql, params string[] as_param)
         {
-            string path = AppDomain.CurrentDomain.BaseDirectory + "\\Log\\";
+            string path = AppDomain.CurrentDomain.BaseDirectory + "\\Log\\" + DateTime.Now.ToString("yyyy-MM-dd") + "\\";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            string fileFullPath = path + DateTime.Now.ToString("yyyy-MM-dd") + "_" + strAction + ".txt";
+            string fileFullPath = path + "sqlitedberror.txt";
             StringBuilder str = new StringBuilder();
-            str.Append("Time:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "\r\n");
+            str.Append("Action :" + strAction + "\r\n");
+            str.Append("Time   :  " + DateTime.Now.ToString("HH:mm:ss.fff") + "\r\n");
             str.Append("Message:" + strText + "\r\n");
             str.Append("Sql:" + as_sql + "\r\n");
             if (as_param != null)
@@ -1834,10 +1738,10 @@ namespace VerificationCode
             string path = AppDomain.CurrentDomain.BaseDirectory + "\\Log\\" + DateTime.Now.ToString("yyyy-MM-dd") + "\\";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            string fileFullPath = path + "sqlitedberror.txt";
+            string fileFullPath = path +  "sqlitedberror.txt";
             StringBuilder str = new StringBuilder();
-            str.Append("Action:" + strAction);
-            str.Append("Time:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "\r\n");
+            str.Append("Action :" + strAction);
+            str.Append("Time   :" + DateTime.Now.ToString("HH:mm:ss.fff") + "\r\n");
             str.Append("Message:" + strText + "\r\n");
             str.Append("Sql:" + as_sql + "\r\n");
             if (as_params != null)
@@ -1876,8 +1780,8 @@ namespace VerificationCode
                 Directory.CreateDirectory(path);
             string fileFullPath = path + "sqlitedberror.txt";
             StringBuilder str = new StringBuilder();
-            str.Append("Action:" + strAction);
-            str.Append("Time:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "\r\n");
+            str.Append("Action :" + strAction);
+            str.Append("Time   :" + DateTime.Now.ToString("HH:mm:ss.fff") + "\r\n");
             str.Append("Message:" + strText + "\r\n");
             str.Append("-----------------------" + "\r\n");
             StreamWriter sw = default(StreamWriter);
@@ -1901,8 +1805,8 @@ namespace VerificationCode
                 Directory.CreateDirectory(path);
             string fileFullPath = path + "sqlitedberror.txt";
             StringBuilder str = new StringBuilder();
-            str.Append("Action:" + strAction);
-            str.Append("Time:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "\r\n");
+            str.Append("Action :" + strAction);
+            str.Append("Time   :" + DateTime.Now.ToString("HH:mm:ss.fff") + "\r\n");
             str.Append("Message:" + strText + "\r\n");
             str.Append("-----------------------" + "\r\n");
             StreamWriter sw = default(StreamWriter);

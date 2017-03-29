@@ -55,7 +55,6 @@ namespace VerificationCode
         public void ProcessRequest(HttpContext context)
         {
             context.Response.ContentType = "text/plain";
-
             string action = context.Request["action"];
             string spec = context.Request["spec"];
             #region 校验参数
@@ -443,7 +442,7 @@ namespace VerificationCode
                 //时间差
                 int __timeSpan = 0;
                 if (__array[i + 1, 1] - __array[i, 1] == 0)
-                    return false;
+                    __timeSpan = 1;
                 else
                     __timeSpan = (GetTime(__array[i + 1, 1].ToString()) - GetTime(__array[i, 1].ToString())).Milliseconds;
                 __v[i] = (double)1000 * Math.Abs(__array[i + 1, 0] - __array[i, 0]) / __timeSpan;//有可能移过再一回来 这里只取正值
@@ -547,7 +546,7 @@ namespace VerificationCode
 
         private void CreateTable()
         {
-            if (SQLiteHelper.of_ExistTable("data"))
+            if (!SQLiteHelper.of_ExistTable("data"))
             {
                 string ls_sql = @"create table data
                             (
