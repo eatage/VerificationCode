@@ -22,12 +22,22 @@
             console.log("%c\u606d\u559c\u4f60\u002c\u6821\u9a8c\u901a\u8fc7\u0021",
                 'background:rgba(255,249,0,.1);color:#00ff21;font-size:40px;');
         }
+        function changespec() {
+            var spec = window.document.getElementById("imgspec").value;
+            $("#__Verification").slide(spec, "test");
+        }
     </script>
 </head>
 <body style="margin:30px auto auto 30px;">
     <div id="__Verification" style=" width:200px; height:134px;">
     </div>
     <p></p>
+    <p><label for="imgspec">图片规格:</label>
+        <select id="imgspec" onchange="changespec()">
+            <option value="200*100">200*100</option>
+            <option value="300*200">300*200</option>
+            <option value="300*300">300*300</option>
+        </select></p>
     <h1 style="color:rgba(0, 255, 33, 0.7);">eatage</h1>
 </body>
 </html>
