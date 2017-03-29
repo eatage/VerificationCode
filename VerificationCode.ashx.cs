@@ -513,52 +513,53 @@ namespace VerificationCode
             __mv2 = __mv2 / threeEqual;
             __mv3 = __mv3 / threeEqual;
             #endregion
-            return true;
-            //将采样结果收集到数据库
-            //CreateTable();
-            //n_create_sql nsql = new n_create_sql("data");
-            //nsql.of_AddCol("sumtime", __totaldate);
-            //nsql.of_AddCol("abscissa", HttpContext.Current.Request["point"]);
-            //nsql.of_AddCol("total", _datalist.Length);
-            //nsql.of_AddCol("meanv", __mv.ToString("0.0000000000"));
-            //nsql.of_AddCol("meanv1", __mv1.ToString("0.0000000000"));
-            //nsql.of_AddCol("meanv2", __mv2.ToString("0.0000000000"));
-            //nsql.of_AddCol("meanv3", __mv3.ToString("0.0000000000"));
-            //nsql.of_AddCol("meana", __ma.ToString("0.0000000000"));
-            //nsql.of_AddCol("meana1", __ma1.ToString("0.0000000000"));
-            //nsql.of_AddCol("meana2", __ma2.ToString("0.0000000000"));
-            //nsql.of_AddCol("meana3", __ma3.ToString("0.0000000000"));
-            //nsql.of_AddCol("standardv", __o2v.ToString("0.0000000000"));
-            //nsql.of_AddCol("standarda", __o2a.ToString("0.0000000000"));
-            //nsql.of_execute();
-
             //return true;
+            //将采样结果收集到数据库
+            CreateTable();
+            n_create_sql nsql = new n_create_sql("data");
+            nsql.of_AddCol("sumtime", __totaldate);
+            nsql.of_AddCol("abscissa", HttpContext.Current.Request["point"]);
+            nsql.of_AddCol("total", _datalist.Length);
+            nsql.of_AddCol("meanv", __mv.ToString("0.0000000000"));
+            nsql.of_AddCol("meanv1", __mv1.ToString("0.0000000000"));
+            nsql.of_AddCol("meanv2", __mv2.ToString("0.0000000000"));
+            nsql.of_AddCol("meanv3", __mv3.ToString("0.0000000000"));
+            nsql.of_AddCol("meana", __ma.ToString("0.0000000000"));
+            nsql.of_AddCol("meana1", __ma1.ToString("0.0000000000"));
+            nsql.of_AddCol("meana2", __ma2.ToString("0.0000000000"));
+            nsql.of_AddCol("meana3", __ma3.ToString("0.0000000000"));
+            nsql.of_AddCol("standardv", __o2v.ToString("0.0000000000"));
+            nsql.of_AddCol("standarda", __o2a.ToString("0.0000000000"));
+            nsql.of_execute();
+
+            return true;
         }
 
 
 
         private void CreateTable()
         {
-            //if (SQLiteHelper.of_ExistTable("data"))
-                return;
-            //string ls_sql = @"create table data
-            //                (
-            //                    id integer primary key autoincrement,
-            //                    sumtime varchar,
-            //                    abscissa varchar,
-            //                    total varchar,
-            //                    meanv varchar,
-            //                    meanv1 varchar,
-            //                    meanv2 varchar,
-            //                    meanv3 varchar,
-            //                    meana varchar,
-            //                    meana1 varchar,
-            //                    meana2 varchar,
-            //                    meana3 varchar,
-            //                    standardv varchar,
-            //                    standarda varchar
-            //                )";
-            //SQLiteHelper.ExecuteNonQuery(ls_sql);
+            if (SQLiteHelper.of_ExistTable("data"))
+            {
+                string ls_sql = @"create table data
+                            (
+                                id integer primary key autoincrement,
+                                sumtime varchar,
+                                abscissa varchar,
+                                total varchar,
+                                meanv varchar,
+                                meanv1 varchar,
+                                meanv2 varchar,
+                                meanv3 varchar,
+                                meana varchar,
+                                meana1 varchar,
+                                meana2 varchar,
+                                meana3 varchar,
+                                standardv varchar,
+                                standarda varchar
+                            )";
+                SQLiteHelper.ExecuteNonQuery(ls_sql);
+            }
         }
 
         /// <summary>

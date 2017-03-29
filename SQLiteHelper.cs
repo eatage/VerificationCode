@@ -206,8 +206,9 @@ namespace VerificationCode
                         cmd.Parameters.AddRange(P);
                     }
                     SQLiteDataReader reader = cmd.ExecuteReader();
-                    string ls_rc = reader[0].ToString();
-                    return ls_rc;
+                    if (reader.Read())
+                        return reader[0].ToString();
+                    else return null;
                 }
             }
             catch (Exception ex)
@@ -243,8 +244,9 @@ namespace VerificationCode
                         cmd.Parameters.AddRange(P);
                     }
                     SQLiteDataReader reader = cmd.ExecuteReader();
-                    string ls_rc = reader[0].ToString();
-                    return ls_rc;
+                    if (reader.Read())
+                        return reader[0].ToString();
+                    else return null;
                 }
             }
             catch (Exception ex)
@@ -277,8 +279,9 @@ namespace VerificationCode
                         cmd.Parameters.AddRange(P);
                     }
                     SQLiteDataReader reader = cmd.ExecuteReader();
-                    string ls_rc = reader[0].ToString();
-                    return ls_rc;
+                    if (reader.Read())
+                        return reader[0].ToString();
+                    else return null;
                 }
             }
             catch (Exception ex)
@@ -314,8 +317,9 @@ namespace VerificationCode
                         cmd.Parameters.AddRange(P);
                     }
                     SQLiteDataReader reader = cmd.ExecuteReader();
-                    string ls_rc = reader[0].ToString();
-                    return ls_rc;
+                    if (reader.Read())
+                        return reader[0].ToString();
+                    else return null;
                 }
             }
             catch (Exception ex)
@@ -347,7 +351,10 @@ namespace VerificationCode
                         cmd.Parameters.AddRange(P);
                     }
                     SQLiteDataReader reader = cmd.ExecuteReader();
-                    return int.Parse(reader[0].ToString());
+                    if (reader.Read())
+                        return int.Parse(reader[0].ToString());
+                    else
+                        return -1;
                 }
             }
             catch (Exception ex)
@@ -382,7 +389,10 @@ namespace VerificationCode
                         cmd.Parameters.AddRange(P);
                     }
                     SQLiteDataReader reader = cmd.ExecuteReader();
-                    return int.Parse(reader[0].ToString());
+                    if (reader.Read())
+                        return int.Parse(reader[0].ToString());
+                    else
+                        return -1;
                 }
             }
             catch (Exception ex)
@@ -414,7 +424,10 @@ namespace VerificationCode
                         cmd.Parameters.AddRange(P);
                     }
                     SQLiteDataReader reader = cmd.ExecuteReader();
-                    return int.Parse(reader[0].ToString());
+                    if (reader.Read())
+                        return int.Parse(reader[0].ToString());
+                    else
+                        return -1;
                 }
             }
             catch (Exception ex)
@@ -449,7 +462,10 @@ namespace VerificationCode
                         cmd.Parameters.AddRange(P);
                     }
                     SQLiteDataReader reader = cmd.ExecuteReader();
-                    return int.Parse(reader[0].ToString());
+                    if (reader.Read())
+                        return int.Parse(reader[0].ToString());
+                    else
+                        return -1;
                 }
             }
             catch (Exception ex)
@@ -481,7 +497,10 @@ namespace VerificationCode
                         cmd.Parameters.AddRange(P);
                     }
                     SQLiteDataReader reader = cmd.ExecuteReader();
-                    return reader;
+                    if (reader.Read())
+                        return reader;
+                    else
+                        return null;
                 }
             }
             catch (Exception ex)
@@ -516,7 +535,10 @@ namespace VerificationCode
                         cmd.Parameters.AddRange(P);
                     }
                     SQLiteDataReader reader = cmd.ExecuteReader();
-                    return reader;
+                    if (reader.Read())
+                        return reader;
+                    else
+                        return null;
                 }
             }
             catch (Exception ex)
@@ -548,7 +570,10 @@ namespace VerificationCode
                         cmd.Parameters.AddRange(P);
                     }
                     SQLiteDataReader reader = cmd.ExecuteReader();
-                    return reader;
+                    if (reader.Read())
+                        return reader;
+                    else
+                        return null;
                 }
             }
             catch (Exception ex)
@@ -583,7 +608,10 @@ namespace VerificationCode
                         cmd.Parameters.AddRange(P);
                     }
                     SQLiteDataReader reader = cmd.ExecuteReader();
-                    return reader;
+                    if (reader.Read())
+                        return reader;
+                    else
+                        return null;
                 }
             }
             catch (Exception ex)
@@ -927,7 +955,7 @@ namespace VerificationCode
             SqlErr = "";
             if (SqlList == null)
                 throw new ArgumentNullException("Sql语句不能为空");
-            if(SqlList.Length==0)
+            if (SqlList.Length == 0)
                 throw new ArgumentNullException("Sql语句不能为空");
             try
             {
@@ -1754,7 +1782,7 @@ namespace VerificationCode
         }
     }
     /// <summary>
-    /// 日志类
+    /// SQLite日志类
     /// </summary>
     public class Log
     {
@@ -1803,11 +1831,12 @@ namespace VerificationCode
         /// <param name="FolderName">文件夹</param>
         public static void WriteLine(string strAction, string strText, string as_sql, SQLiteParameter[] as_params)
         {
-            string path = AppDomain.CurrentDomain.BaseDirectory + "\\Log\\";
+            string path = AppDomain.CurrentDomain.BaseDirectory + "\\Log\\" + DateTime.Now.ToString("yyyy-MM-dd") + "\\";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            string fileFullPath = path + DateTime.Now.ToString("yyyy-MM-dd") + "_" + strAction + ".txt";
+            string fileFullPath = path + "sqlitedberror.txt";
             StringBuilder str = new StringBuilder();
+            str.Append("Action:" + strAction);
             str.Append("Time:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "\r\n");
             str.Append("Message:" + strText + "\r\n");
             str.Append("Sql:" + as_sql + "\r\n");
@@ -1842,11 +1871,12 @@ namespace VerificationCode
         /// <param name="FolderName">文件夹</param>
         public static void Write(string strAction, string strText, string as_Path, string FolderName = "Log")
         {
-            string path = as_Path + "\\" + FolderName + "\\";
+            string path = as_Path + "\\" + FolderName + "\\" + DateTime.Now.ToString("yyyy-MM-dd") + "\\";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            string fileFullPath = path + DateTime.Now.ToString("yyyy-MM-dd") + "_" + strAction + ".txt";
+            string fileFullPath = path + "sqlitedberror.txt";
             StringBuilder str = new StringBuilder();
+            str.Append("Action:" + strAction);
             str.Append("Time:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "\r\n");
             str.Append("Message:" + strText + "\r\n");
             str.Append("-----------------------" + "\r\n");
@@ -1866,11 +1896,12 @@ namespace VerificationCode
         /// <param name="FolderName">文件夹</param>
         public static void Write(string strAction, string strText, string FolderName = "Log")
         {
-            string path = AppDomain.CurrentDomain.BaseDirectory + "\\" + FolderName + "\\";
+            string path = AppDomain.CurrentDomain.BaseDirectory + "\\" + FolderName + "\\" + DateTime.Now.ToString("yyyy-MM-dd") + "\\";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            string fileFullPath = path + DateTime.Now.ToString("yyyy-MM-dd") + "_" + strAction + ".txt";
+            string fileFullPath = path + "sqlitedberror.txt";
             StringBuilder str = new StringBuilder();
+            str.Append("Action:" + strAction);
             str.Append("Time:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "\r\n");
             str.Append("Message:" + strText + "\r\n");
             str.Append("-----------------------" + "\r\n");

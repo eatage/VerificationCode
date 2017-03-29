@@ -1,0 +1,6 @@
+Time:2017-03-29 16:05:07.670
+Message:SQLite error
+no such table: data
+Sql:INSERT INTO data(sumtime,abscissa,total,meanv,meanv1,meanv2,meanv3,meana,meana1,meana2,meana3,standardv,standarda) VALUES ( '543', '68', '70', '332.8056900947', '464.2857142857', '433.3333333333', '100.7980226650', '160002.6479070530', '231828.6010056200', '227971.0144927540', '20208.3282227854', '422.3110855523', '302638.9607166630')
+-----------------------
+
