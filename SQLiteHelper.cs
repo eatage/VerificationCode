@@ -177,7 +177,7 @@ namespace VerificationCode
         /// <param name="sql">sql字符串</param>
         /// <param name="as_param">参数 如as_param1="@id=123"</param>
         /// <returns></returns>
-        public static string ExecuteScalar(string sql, params string[] as_param)
+        public static object ExecuteScalarObj(string sql, params string[] as_param)
         {
             if (!isCaseSensitive)
                 sql += " COLLATE NOCASE";
@@ -191,10 +191,7 @@ namespace VerificationCode
                     SQLiteParameter[] P = GetSQLiteParameter(as_param);
                     if (P != null)
                         cmd.Parameters.AddRange(P);
-                    SQLiteDataReader reader = cmd.ExecuteReader();
-                    if (reader.Read())
-                        return reader[0].ToString();
-                    else return null;
+                    return cmd.ExecuteScalar();
                 }
             }
             catch (Exception ex)
@@ -203,6 +200,115 @@ namespace VerificationCode
                 Log.WriteLine("sql", SqlErr, sql, as_param);
                 return null;
             }
+        }
+        /// <summary>
+        /// 返回查询字符串第一个匹配项
+        /// </summary>
+        /// <param name="type">sql命令类型</param>
+        /// <param name="as_connStr">连接字符串</param>
+        /// <param name="sql">sql字符串</param>
+        /// <param name="as_param">参数 如as_param1="@id=123"</param>
+        /// <returns></returns>
+        public static object ExecuteScalarObj(CommandType type, string as_connStr, string sql, params string[] as_param)
+        {
+            if (!isCaseSensitive)
+                sql += " COLLATE NOCASE";
+            SqlErr = string.Empty;
+            try
+            {
+                using (conn = new SQLiteConnection(as_connStr))
+                {
+                    SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+                    cmd.CommandType = type;
+                    conn.Open();
+                    SQLiteParameter[] P = GetSQLiteParameter(as_param);
+                    if (P != null)
+                        cmd.Parameters.AddRange(P);
+                    return cmd.ExecuteScalar();
+                }
+            }
+            catch (Exception ex)
+            {
+                SqlErr = ex.Message;
+                Log.WriteLine("sql", SqlErr, sql, as_param);
+                return null;
+            }
+        }
+        /// <summary>
+        /// 返回查询字符串第一个匹配项
+        /// </summary>
+        /// <param name="sql">sql字符串</param>
+        /// <param name="as_params">参数</param>
+        /// <returns></returns>
+        public static object ExecuteScalarObj(string sql, SQLiteParameter[] as_params)
+        {
+            if (!isCaseSensitive)
+                sql += " COLLATE NOCASE";
+            SqlErr = string.Empty;
+            try
+            {
+                using (conn = new SQLiteConnection(dbConnection))
+                {
+                    SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+                    conn.Open();
+                    SQLiteParameter[] P = as_params;
+                    if (P != null)
+                        cmd.Parameters.AddRange(P);
+                    return cmd.ExecuteScalar();
+                }
+            }
+            catch (Exception ex)
+            {
+                SqlErr = ex.Message;
+                Log.WriteLine("sql", SqlErr, sql, as_params);
+                return null;
+            }
+        }
+        /// <summary>
+        /// 返回查询字符串第一个匹配项
+        /// </summary>
+        /// <param name="type">sql命令类型</param>
+        /// <param name="as_connStr">连接字符串</param>
+        /// <param name="sql">sql字符串</param>
+        /// <param name="as_params">参数</param>
+        /// <returns></returns>
+        public static object ExecuteScalarObj(CommandType type, string as_connStr, string sql, SQLiteParameter[] as_params)
+        {
+            if (!isCaseSensitive)
+                sql += " COLLATE NOCASE";
+            SqlErr = string.Empty;
+            try
+            {
+                using (conn = new SQLiteConnection(as_connStr))
+                {
+                    SQLiteCommand cmd = new SQLiteCommand(sql, conn);
+                    cmd.CommandType = type;
+                    conn.Open();
+                    SQLiteParameter[] P = as_params;
+                    if (P != null)
+                        cmd.Parameters.AddRange(P);
+                    return cmd.ExecuteScalar();
+                }
+            }
+            catch (Exception ex)
+            {
+                SqlErr = ex.Message;
+                Log.WriteLine("sql", SqlErr, sql, as_params);
+                return null;
+            }
+        }
+        /// <summary>
+        /// 返回查询字符串第一个匹配项
+        /// </summary>
+        /// <param name="sql">sql字符串</param>
+        /// <param name="as_param">参数 如as_param1="@id=123"</param>
+        /// <returns></returns>
+        public static string ExecuteScalar(string sql, params string[] as_param)
+        {
+            var o = ExecuteScalarObj(sql, as_param);
+            if (o != null)
+                return o.ToString();
+            return null;
         }
         /// <summary>
         /// 返回查询字符串第一个匹配项
@@ -214,32 +320,10 @@ namespace VerificationCode
         /// <returns></returns>
         public static string ExecuteScalar(CommandType type, string as_connStr, string sql, params string[] as_param)
         {
-            if (!isCaseSensitive)
-                sql += " COLLATE NOCASE";
-            SqlErr = string.Empty;
-            try
-            {
-                using (conn = new SQLiteConnection(as_connStr))
-                {
-                    SQLiteCommand cmd = new SQLiteCommand(sql, conn);
-                    cmd.CommandType = type;
-                    conn.Open();
-                    SQLiteParameter[] P = GetSQLiteParameter(as_param);
-                    if (P != null)
-                        cmd.Parameters.AddRange(P);
-
-                    SQLiteDataReader reader = cmd.ExecuteReader();
-                    if (reader.Read())
-                        return reader[0].ToString();
-                    else return null;
-                }
-            }
-            catch (Exception ex)
-            {
-                SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_param);
-                return null;
-            }
+            var o = ExecuteScalarObj(type, as_connStr, sql, as_param);
+            if (o != null)
+                return o.ToString();
+            return null;
         }
         /// <summary>
         /// 返回查询字符串第一个匹配项
@@ -249,30 +333,10 @@ namespace VerificationCode
         /// <returns></returns>
         public static string ExecuteScalar(string sql, SQLiteParameter[] as_params)
         {
-            if (!isCaseSensitive)
-                sql += " COLLATE NOCASE";
-            SqlErr = string.Empty;
-            try
-            {
-                using (conn = new SQLiteConnection(dbConnection))
-                {
-                    SQLiteCommand cmd = new SQLiteCommand(sql, conn);
-                    conn.Open();
-                    SQLiteParameter[] P = as_params;
-                    if (P != null)
-                        cmd.Parameters.AddRange(P);
-                    SQLiteDataReader reader = cmd.ExecuteReader();
-                    if (reader.Read())
-                        return reader[0].ToString();
-                    else return null;
-                }
-            }
-            catch (Exception ex)
-            {
-                SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_params);
-                return null;
-            }
+            var o = ExecuteScalarObj(sql, as_params);
+            if (o != null)
+                return o.ToString();
+            return null;
         }
         /// <summary>
         /// 返回查询字符串第一个匹配项
@@ -284,31 +348,10 @@ namespace VerificationCode
         /// <returns></returns>
         public static string ExecuteScalar(CommandType type, string as_connStr, string sql, SQLiteParameter[] as_params)
         {
-            if (!isCaseSensitive)
-                sql += " COLLATE NOCASE";
-            SqlErr = string.Empty;
-            try
-            {
-                using (conn = new SQLiteConnection(as_connStr))
-                {
-                    SQLiteCommand cmd = new SQLiteCommand(sql, conn);
-                    cmd.CommandType = type;
-                    conn.Open();
-                    SQLiteParameter[] P = as_params;
-                    if (P != null)
-                        cmd.Parameters.AddRange(P);
-                    SQLiteDataReader reader = cmd.ExecuteReader();
-                    if (reader.Read())
-                        return reader[0].ToString();
-                    else return null;
-                }
-            }
-            catch (Exception ex)
-            {
-                SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_params);
-                return null;
-            }
+            var o = ExecuteScalarObj(type, as_connStr, sql, as_params);
+            if (o != null)
+                return o.ToString();
+            return null;
         }
         /// <summary>
         /// 返回整数
@@ -318,31 +361,8 @@ namespace VerificationCode
         /// <returns>返回整数 错误时返回-1</returns>
         public static int ExecuteScalarNum(string sql, params string[] as_param)
         {
-            if (!isCaseSensitive)
-                sql += " COLLATE NOCASE";
-            SqlErr = string.Empty;
-            try
-            {
-                using (conn = new SQLiteConnection(dbConnection))
-                {
-                    SQLiteCommand cmd = new SQLiteCommand(sql, conn);
-                    conn.Open();
-                    SQLiteParameter[] P = GetSQLiteParameter(as_param);
-                    if (P != null)
-                        cmd.Parameters.AddRange(P);
-                    SQLiteDataReader reader = cmd.ExecuteReader();
-                    if (reader.Read())
-                        return int.Parse(reader[0].ToString());
-                    else
-                        return -1;
-                }
-            }
-            catch (Exception ex)
-            {
-                SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_param); ;
-                return -1;
-            }
+            try { return Convert.ToInt32(ExecuteScalarObj(sql, as_param)); }
+            catch { return -1; }
         }
         /// <summary>
         /// 返回整数
@@ -354,32 +374,8 @@ namespace VerificationCode
         /// <returns>返回整数 错误时返回-1</returns>
         public static int ExecuteScalarNum(CommandType type, string as_connStr, string sql, params string[] as_param)
         {
-            if (!isCaseSensitive)
-                sql += " COLLATE NOCASE";
-            SqlErr = string.Empty;
-            try
-            {
-                using (conn = new SQLiteConnection(as_connStr))
-                {
-                    SQLiteCommand cmd = new SQLiteCommand(sql, conn);
-                    cmd.CommandType = type;
-                    conn.Open();
-                    SQLiteParameter[] P = GetSQLiteParameter(as_param);
-                    if (P != null)
-                        cmd.Parameters.AddRange(P);
-                    SQLiteDataReader reader = cmd.ExecuteReader();
-                    if (reader.Read())
-                        return int.Parse(reader[0].ToString());
-                    else
-                        return -1;
-                }
-            }
-            catch (Exception ex)
-            {
-                SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_param); ;
-                return -1;
-            }
+            try { return Convert.ToInt32(ExecuteScalarObj(type, as_connStr, sql, as_param)); }
+            catch { return -1; }
         }
         /// <summary>
         /// 返回整数
@@ -389,31 +385,8 @@ namespace VerificationCode
         /// <returns>返回整数 错误时返回-1</returns>
         public static int ExecuteScalarNum(string sql, SQLiteParameter[] as_params)
         {
-            if (!isCaseSensitive)
-                sql += " COLLATE NOCASE";
-            SqlErr = string.Empty;
-            try
-            {
-                using (conn = new SQLiteConnection(dbConnection))
-                {
-                    SQLiteCommand cmd = new SQLiteCommand(sql, conn);
-                    conn.Open();
-                    SQLiteParameter[] P = as_params;
-                    if (P != null)
-                        cmd.Parameters.AddRange(P);
-                    SQLiteDataReader reader = cmd.ExecuteReader();
-                    if (reader.Read())
-                        return int.Parse(reader[0].ToString());
-                    else
-                        return -1;
-                }
-            }
-            catch (Exception ex)
-            {
-                SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_params); ;
-                return -1;
-            }
+            try { return Convert.ToInt32(ExecuteScalarObj(sql, as_params)); }
+            catch { return -1; }
         }
         /// <summary>
         /// 返回整数
@@ -425,32 +398,8 @@ namespace VerificationCode
         /// <returns>返回整数 错误时返回-1</returns>
         public static int ExecuteScalarNum(CommandType type, string as_connStr, string sql, SQLiteParameter[] as_params)
         {
-            if (!isCaseSensitive)
-                sql += " COLLATE NOCASE";
-            SqlErr = string.Empty;
-            try
-            {
-                using (conn = new SQLiteConnection(as_connStr))
-                {
-                    SQLiteCommand cmd = new SQLiteCommand(sql, conn);
-                    cmd.CommandType = type;
-                    conn.Open();
-                    SQLiteParameter[] P = as_params;
-                    if (P != null)
-                        cmd.Parameters.AddRange(P);
-                    SQLiteDataReader reader = cmd.ExecuteReader();
-                    if (reader.Read())
-                        return int.Parse(reader[0].ToString());
-                    else
-                        return -1;
-                }
-            }
-            catch (Exception ex)
-            {
-                SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_params); ;
-                return -1;
-            }
+            try { return Convert.ToInt32(ExecuteScalarObj(type, as_connStr, sql, as_params)); }
+            catch { return -1; }
         }
         /// <summary>
         /// 返回SQLiteDataReader
@@ -767,6 +716,50 @@ namespace VerificationCode
             }
         }
         /// <summary>
+        /// 返回当前条件下的总行数
+        /// </summary>
+        private static int ExecuteScalarRows(CommandType type, string as_connStr, string sql, SQLiteParameter[] as_params)
+        {
+            int beg = sql.ToLower().IndexOf("select");
+            int end = sql.ToLower().IndexOf("from");
+            string param = sql.Substring(beg + 7, end - beg - 7);
+            sql = sql.Replace(param, " count(*) ");
+            return ExecuteScalarNum(type, as_connStr, sql, as_params);
+        }
+        /// <summary>
+        /// 返回当前条件下的总行数
+        /// </summary>
+        private static int ExecuteScalarRows(CommandType type, string as_connStr, string sql, params string[] as_param)
+        {
+            int beg = sql.ToLower().IndexOf("select");
+            int end = sql.ToLower().IndexOf("from");
+            string param = sql.Substring(beg + 7, end - beg - 7);
+            sql = sql.Replace(param, " count(*) ");
+            return ExecuteScalarNum(type, as_connStr, sql, as_param);
+        }
+        /// <summary>
+        /// 返回当前条件下的总行数
+        /// </summary>
+        private static int ExecuteScalarRows(string sql, SQLiteParameter[] as_params)
+        {
+            int beg = sql.ToLower().IndexOf("select");
+            int end = sql.ToLower().IndexOf("from");
+            string param = sql.Substring(beg + 7, end - beg - 7);
+            sql = sql.Replace(param, " count(*) ");
+            return ExecuteScalarNum(sql, as_params);
+        }
+        /// <summary>
+        /// 返回当前条件下的总行数
+        /// </summary>
+        private static int ExecuteScalarRows(string sql, params string[] as_param)
+        {
+            int beg = sql.ToLower().IndexOf("select");
+            int end = sql.ToLower().IndexOf("from");
+            string param = sql.Substring(beg + 7, end - beg - 7);
+            sql = sql.Replace(param, " count(*) ");
+            return ExecuteScalarNum(sql, as_param);
+        }
+        /// <summary>
         /// 分页返回Datatable
         /// </summary>
         /// <param name="sql">sql字符串</param>
@@ -775,14 +768,14 @@ namespace VerificationCode
         /// <param name="ai_totalrow">总行数</param>
         /// <param name="as_param">参数 如as_param1="@id=123"</param>
         /// <returns></returns>
-        public static DataTable ExecuteDataTable(string sql, int ai_PageSize, int ai_PageIndex, ref int ai_totalrow, params string[] as_param)
+        public static DataTable ExecuteDataTablePage(string sql, int ai_PageSize, int ai_PageIndex, ref int ai_totalrow, params string[] as_param)
         {
             if (ai_PageSize > 20000)
                 ai_PageSize = 20000;
             DataTable dt = new DataTable();
             if (sql.IndexOf("limit") > 0)
                 throw new Exception("分页方法内不允许含有limit命令");
-            ai_totalrow = ExecuteScalarNum(sql);
+            ai_totalrow = ExecuteScalarRows(sql, as_param);
             if (ai_PageIndex == 1)
                 sql += " limit 0," + ai_PageSize;
             else
@@ -801,14 +794,14 @@ namespace VerificationCode
         /// <param name="ai_totalrow">总行数</param>
         /// <param name="as_param">参数 如as_param1="@id=123"</param>
         /// <returns></returns>
-        public static DataTable ExecuteDataTable(CommandType type, string as_connStr, string sql, int ai_PageSize, int ai_PageIndex, ref int ai_totalrow, params string[] as_param)
+        public static DataTable ExecuteDataTablePage(CommandType type, string as_connStr, string sql, int ai_PageSize, int ai_PageIndex, ref int ai_totalrow, params string[] as_param)
         {
             if (ai_PageSize > 20000)
                 ai_PageSize = 20000;
             DataTable dt = new DataTable();
             if (sql.IndexOf("limit") > 0)
                 throw new Exception("分页方法内不允许含有limit命令");
-            ai_totalrow = ExecuteScalarNum(type, as_connStr, sql);
+            ai_totalrow = ExecuteScalarRows(type, as_connStr, sql, as_param);
             if (ai_PageIndex == 1)
                 sql += " limit 0," + ai_PageSize;
             else
@@ -825,14 +818,14 @@ namespace VerificationCode
         /// <param name="ai_totalrow">总行数</param>
         /// <param name="as_params">参数</param>
         /// <returns></returns>
-        public static DataTable ExecuteDataTable(string sql, int ai_PageSize, int ai_PageIndex, ref int ai_totalrow, SQLiteParameter[] as_params)
+        public static DataTable ExecuteDataTablePage(string sql, int ai_PageSize, int ai_PageIndex, ref int ai_totalrow, SQLiteParameter[] as_params)
         {
             if (ai_PageSize > 20000)
                 ai_PageSize = 20000;
             DataTable dt = new DataTable();
             if (sql.IndexOf("limit") > 0)
                 throw new Exception("分页方法内不允许含有limit命令");
-            ai_totalrow = ExecuteScalarNum(sql);
+            ai_totalrow = ExecuteScalarRows(sql, as_params);
             if (ai_PageIndex == 1)
                 sql += " limit 0," + ai_PageSize;
             else
@@ -851,14 +844,14 @@ namespace VerificationCode
         /// <param name="ai_totalrow">总行数</param>
         /// <param name="as_params">参数</param>
         /// <returns></returns>
-        public static DataTable ExecuteDataTable(CommandType type, string as_connStr, string sql, int ai_PageSize, int ai_PageIndex, ref int ai_totalrow, SQLiteParameter[] as_params)
+        public static DataTable ExecuteDataTablePage(CommandType type, string as_connStr, string sql, int ai_PageSize, int ai_PageIndex, ref int ai_totalrow, SQLiteParameter[] as_params)
         {
             if (ai_PageSize > 20000)
                 ai_PageSize = 20000;
             DataTable dt = new DataTable();
             if (sql.IndexOf("limit") > 0)
                 throw new Exception("分页方法内不允许含有limit命令");
-            ai_totalrow = ExecuteScalarNum(type, as_connStr, sql);
+            ai_totalrow = ExecuteScalarRows(type, as_connStr, sql, as_params);
             if (ai_PageIndex == 1)
                 sql += " limit 0," + ai_PageSize;
             else
@@ -1188,8 +1181,8 @@ namespace VerificationCode
         /// <param name="tableName">表名</param>
         public static Boolean of_ExistTable(string tableName)
         {
-            string sql = "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='" + tableName + "'";
-            int row = ExecuteScalarNum(sql);
+            string sql = "SELECT count(*) FROM sqlite_master WHERE type='table' AND name=@tablename";
+            int row = ExecuteScalarNum(sql, "@tablename="+ tableName);
             if (row == 1)
                 return true;
             else
@@ -1203,8 +1196,8 @@ namespace VerificationCode
         /// <param name="tableName">表名</param>
         public static Boolean of_ExistTable(CommandType type, string as_connStr, string tableName)
         {
-            string sql = "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='" + tableName + "'";
-            int row = ExecuteScalarNum(type, as_connStr, sql);
+            string sql = "SELECT count(*) FROM sqlite_master WHERE type='table' AND name=@tablename";
+            int row = ExecuteScalarNum(type, as_connStr, sql, "@tablename=" + tableName);
             if (row == 1)
                 return true;
             else
@@ -1291,18 +1284,12 @@ namespace VerificationCode
             {
                 string ls_str = as_param[i];
                 if (string.IsNullOrEmpty(ls_str))
-                {
                     throw new ArgumentNullException("传入参数不允许为空,正确格式为：@id=123");
-                }
                 if (ls_str.IndexOf("=") == -1)
-                {
                     throw new ArgumentNullException("传入参数错误,正确格式为：@id=123");
-                }
                 string[] ls_strlist = ls_str.Split(new string[] { "=" }, StringSplitOptions.None);
-                if (ls_strlist.Length > 2)
-                {
+                if (ls_strlist.Length != 2)
                     throw new ArgumentNullException("传入参数错误,正确格式为：@id=123");
-                }
                 string ls_param = ls_strlist[0].Trim();
                 string ls_value = ls_strlist[1];
 
@@ -1738,7 +1725,7 @@ namespace VerificationCode
             string path = AppDomain.CurrentDomain.BaseDirectory + "\\Log\\" + DateTime.Now.ToString("yyyy-MM-dd") + "\\";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            string fileFullPath = path +  "sqlitedberror.txt";
+            string fileFullPath = path + "sqlitedberror.txt";
             StringBuilder str = new StringBuilder();
             str.Append("Action :" + strAction);
             str.Append("Time   :" + DateTime.Now.ToString("HH:mm:ss.fff") + "\r\n");
