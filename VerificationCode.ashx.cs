@@ -1,15 +1,15 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.SessionState;
-using Newtonsoft.Json.Linq;
 
 namespace VerificationCode
 {
     /// <summary>
-    /// 滑块验证码
+    /// 滑块验证码生成
     /// </summary>
     public class VerificationCode : IHttpHandler, IRequiresSessionState
     {
@@ -51,7 +51,6 @@ namespace VerificationCode
         //最大错误次数
         private const int _MaxErrorNum = 4;
         #endregion
-
         public void ProcessRequest(HttpContext context)
         {
             context.Response.ContentType = "text/plain";
@@ -69,7 +68,6 @@ namespace VerificationCode
                 return;
             }
             #endregion
-
             #region 图片规格
             if (string.IsNullOrEmpty(spec))
                 spec = "300*300";
@@ -128,7 +126,6 @@ namespace VerificationCode
             string ls_point = context.Request["point"];//完成时x轴对于左上角位置位置
             string datelist = context.Request["datelist"];//滑动过程特征
             string timespan = context.Request["timespan"];//耗时
-
             if (HttpContext.Current.Session["code"] == null)
             { WriteError(context, "发生错误"); return; }
             if (string.IsNullOrEmpty(ls_point))
@@ -538,12 +535,8 @@ namespace VerificationCode
             nsql.of_AddCol("standardv", __o2v.ToString("0.0000000000"));
             nsql.of_AddCol("standarda", __o2a.ToString("0.0000000000"));
             nsql.of_execute();
-
             return true;
         }
-
-
-
         private void CreateTable()
         {
             if (!SQLiteHelper.of_ExistTable("data"))
@@ -568,7 +561,6 @@ namespace VerificationCode
                 SQLiteHelper.ExecuteNonQuery(ls_sql);
             }
         }
-
         /// <summary>
         /// 时间戳转为C#格式时间
         /// </summary>
@@ -582,7 +574,6 @@ namespace VerificationCode
             DateTime now = dtStart.Add(toNow);
             return now;
         }
-
         public bool IsReusable
         {
             get
