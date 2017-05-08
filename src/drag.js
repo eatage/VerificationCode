@@ -172,9 +172,9 @@
         });//手指松开
         //鼠标/手指开始滑动
         function dragstart(thisx) {
-            if (thisx >= maxWidth) {
-                return;
-            }
+            //if (thisx >= maxWidth) {
+            //    return;
+            //}
             $xy_img.show();
             isMove = true;
             x = thisx - parseInt(handler.css('left'), 10);
