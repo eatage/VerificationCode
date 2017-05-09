@@ -1,5 +1,5 @@
 /* 
-* drag 1.0
+* drag 1.1
 * date 2017-02-10
 * 获取滑块验证码
 * JavaScript工具推荐：
@@ -91,6 +91,8 @@
                     //显示第i张图片
                     $("#bb" + i).css("background-position", x + "px " + y + "px");
                 }
+                //完成,移除提示
+                $(".vcode-hints").remove();
             },
             beforeSend: function () {
             }
@@ -106,6 +108,8 @@
         var __codeDIV = document.getElementById(__codediv);
         __codeDIV.innerHTML = '';
         var __codeHTML = "<div style='width:" + __imgx + "px;height:" + __imgy + "px;background-color:#e8e8e8;'>";
+        //正在载入提示文字
+        __codeHTML += "<div class='vcode-hints'style='width:" + __imgx + "px;line-height:" + (__imgy/100)*7 + ";'>正在载入...</div>";
         for (var i = 0; i < 20; i++) {
             //20张小图组成完整的验证码图片
             __codeHTML += "<div id='bb" + i + "'class='cut_bg'></div>";
@@ -115,7 +119,9 @@
     }
 })(jQuery);
 /*
-*滑块验证码
+*
+* date 2017-02-10
+* 滑块验证码校验
 */
 (function ($) {
     $.fn.drag = function (executename, imgx, imgy, __codediv) {

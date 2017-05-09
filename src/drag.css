@@ -73,3 +73,11 @@
     top: 9px;
     display:none;
 }
+/*正在载入提示*/
+.vcode-hints {
+    position:absolute;
+    z-index:0;
+    text-align:center;
+    color:#999999;
+    font-size:15px;
+}
