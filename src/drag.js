@@ -109,7 +109,7 @@
         __codeDIV.innerHTML = '';
         var __codeHTML = "<div style='width:" + __imgx + "px;height:" + __imgy + "px;background-color:#e8e8e8;'>";
         //正在载入提示文字
-        __codeHTML += "<div class='vcode-hints'style='width:" + __imgx + "px;line-height:" + (__imgy/100)*7 + ";'>正在载入...</div>";
+        __codeHTML += "<div class='vcode-hints'style='width:" + __imgx + "px;line-height:" + (__imgy / 100) * 7 + ";'>\u6b63\u5728\u8f7d\u5165...</div>";
         for (var i = 0; i < 20; i++) {
             //20张小图组成完整的验证码图片
             __codeHTML += "<div id='bb" + i + "'class='cut_bg'></div>";
