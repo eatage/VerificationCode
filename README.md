@@ -13,7 +13,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;*imgy：验证码图片高度*</br>
 &nbsp;&nbsp;&nbsp;&nbsp;*small：裁剪的小图片*</br>
 &nbsp;&nbsp;&nbsp;&nbsp;*normal：验证码混淆后的图片*</br>
-**兼容信息：**兼容主流浏览器，IPhone端的Safari、QQ内置浏览器、微信内置浏览器测试通过，Android端未测试
+**兼容信息：**兼容主流浏览器，iPhone端的Safari、QQ内置浏览器、微信内置浏览器、Android端主流浏览器
 
 #### JSON格式示例
 ```  json
