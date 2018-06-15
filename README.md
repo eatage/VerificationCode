@@ -27,5 +27,3 @@
   "normal":"data:image/jpg;base64,/..."
 }
 ```
-
-#### 演示地址：[demo](http://120.76.164.184/vcode/)
