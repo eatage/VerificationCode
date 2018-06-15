@@ -1,32 +1,35 @@
-﻿using System;
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Data.SQLite;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace VerificationCode
 {
     /*****************************************************************
-     * 2016-07-27 修改 共四个类:SQLiteHelper n_create_sql publicfuns Log
+     * 2018-06-15 更新 共四个类:SQLiteHelper SQLite_create_sql SQLiteDbca SQLiteMysysSet SQLiteLog
      * 支持.NET 2.0 及更高版本 依赖 System.Data.SQLite.DLL
      * 1、为了易于使用，在执行SQLiteHelper方法带参数时可如下使用：
      * SQLiteHelper.ExecuteScalar("select username from myuser where userid=@userid", "@userid=" + ls_userid);
      * 2、为了使重载连接不同数据库的方法与原方法不易混淆，连接不同数据库的重载方法第一个参数都为CommandType
-     * 类型，第二个参数为连接字符串，在n_create_sql publicfuns类中等同
+     * 类型，第二个参数为连接字符串，在SQLite_create_sql SQLiteMysysSet类中等同
      * 3、SQLite在进行字符串比较的时候，默认对大小写是敏感的，如不需要大小写敏感 设置isCaseSensitive=false
      * 执行完需要重置isCaseSensitive=true
-     * 4、为了便于insert与update语句的执行，增加n_create_sql类，使用如下
-     * n_create_sql lnv_sql = new n_create_sql("myuser");
+     * 4、为了便于insert与update语句的执行，增加SQLite_create_sql类，使用如下
+     * SQLite_create_sql lnv_sql = new SQLite_create_sql("myuser");
      * lnv_sql.of_AddCol("username", "admin");
      * lnv_sql.of_execute("userid=@userid", "@userid=123");
-     * 5、publicfuns 相当于在数据库保存的参数key value
-     * 设置：publicfuns.of_SetMySysSet("database", "type", "sqlite");
-     * 读取：publicfuns.of_GetMySysSet("database", "type");//返回sqlite
-     * 6、Log为日志类，用于sql执行错误时在磁盘写入日志，默认目录为可执行文件下Log文件夹
+     * 5、事务操作类SQLiteDbca
+     * 支持事务，并支持使用SQLite_create_sql类
+     * 6、SQLiteMysysSet 相当于在数据库保存的参数key value
+     * 设置：SQLiteMysysSet.of_SetMySysSet("database", "type", "sqlite");
+     * 读取：SQLiteMysysSet.of_GetMySysSet("database", "type");//返回sqlite
+     * 7、SQLiteLog为日志类，用于sql执行错误时在磁盘写入日志，默认目录为可执行文件下Log文件夹
      ******************************************************************/
     /// <summary>
-    /// 操作SQLite数据库
+    /// SQLiteHelper操作类
     /// </summary>
     public class SQLiteHelper
     {
@@ -35,12 +38,18 @@ namespace VerificationCode
         /// 默认在可执行目录下 数据库文件名为setting.db
         /// </summary>
         public static string dbConnection = "Data Source =" + AppDomain.CurrentDomain.BaseDirectory + "\\setting.db;Version=3;";
+        /// <summary>
+        /// 连接对象
+        /// </summary>
         private static SQLiteConnection conn = null;
         /// <summary>
         /// 是否区分大小写(默认区分大小写)
         /// SQLite在进行字符串比较的时候，默认对大小写是敏感的
+        /// <para>必须在条件存在时使用</para>
+        /// <para>否则执行将报语法错误</para>
+        /// <para>此属性为静态变量，执行完需手动恢复初始值</para>
         /// </summary>
-        public static Boolean isCaseSensitive = true;
+        public static Boolean CaseSensitive = true;
         /// <summary>
         /// 执行sql错误提示 无错误时返回string.Empty
         /// </summary>
@@ -53,7 +62,7 @@ namespace VerificationCode
         /// <returns>返回受影响行数 错误时返回-1</returns>
         public static int ExecuteNonQuery(string sql, params string[] as_param)
         {
-            if (!isCaseSensitive)
+            if (!CaseSensitive)
                 sql += " COLLATE NOCASE";
             SqlErr = string.Empty;
             try
@@ -71,7 +80,7 @@ namespace VerificationCode
             catch (Exception ex)
             {
                 SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_param);
+                SQLiteLog.WriteLine("sql", SqlErr, sql, as_param);
                 return -1;
             }
         }
@@ -85,7 +94,7 @@ namespace VerificationCode
         /// <returns>返回受影响行数 错误时返回-1</returns>
         public static int ExecuteNonQuery(CommandType type, string as_connStr, string sql, params string[] as_param)
         {
-            if (!isCaseSensitive)
+            if (!CaseSensitive)
                 sql += " COLLATE NOCASE";
             SqlErr = string.Empty;
             try
@@ -104,7 +113,7 @@ namespace VerificationCode
             catch (Exception ex)
             {
                 SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_param);
+                SQLiteLog.WriteLine("sql", SqlErr, sql, as_param);
                 return -1;
             }
         }
@@ -116,7 +125,7 @@ namespace VerificationCode
         /// <returns>返回受影响行数 错误时返回-1</returns>
         public static int ExecuteNonQuery(string sql, SQLiteParameter[] as_params)
         {
-            if (!isCaseSensitive)
+            if (!CaseSensitive)
                 sql += " COLLATE NOCASE";
             SqlErr = string.Empty;
             try
@@ -134,7 +143,7 @@ namespace VerificationCode
             catch (Exception ex)
             {
                 SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_params);
+                SQLiteLog.WriteLine("sql", SqlErr, sql, as_params);
                 return -1;
             }
         }
@@ -148,7 +157,7 @@ namespace VerificationCode
         /// <returns>返回受影响行数 错误时返回-1</returns>
         public static int ExecuteNonQuery(CommandType type, string as_connStr, string sql, SQLiteParameter[] as_params)
         {
-            if (!isCaseSensitive)
+            if (!CaseSensitive)
                 sql += " COLLATE NOCASE";
             SqlErr = string.Empty;
             try
@@ -167,7 +176,7 @@ namespace VerificationCode
             catch (Exception ex)
             {
                 SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_params);
+                SQLiteLog.WriteLine("sql", SqlErr, sql, as_params);
                 return -1;
             }
         }
@@ -177,9 +186,9 @@ namespace VerificationCode
         /// <param name="sql">sql字符串</param>
         /// <param name="as_param">参数 如as_param1="@id=123"</param>
         /// <returns></returns>
-        public static object ExecuteScalarObj(string sql, params string[] as_param)
+        internal static object ExecuteScalarObj(string sql, params string[] as_param)
         {
-            if (!isCaseSensitive)
+            if (!CaseSensitive)
                 sql += " COLLATE NOCASE";
             SqlErr = string.Empty;
             try
@@ -197,7 +206,7 @@ namespace VerificationCode
             catch (Exception ex)
             {
                 SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_param);
+                SQLiteLog.WriteLine("sql", SqlErr, sql, as_param);
                 return null;
             }
         }
@@ -209,9 +218,9 @@ namespace VerificationCode
         /// <param name="sql">sql字符串</param>
         /// <param name="as_param">参数 如as_param1="@id=123"</param>
         /// <returns></returns>
-        public static object ExecuteScalarObj(CommandType type, string as_connStr, string sql, params string[] as_param)
+        internal static object ExecuteScalarObj(CommandType type, string as_connStr, string sql, params string[] as_param)
         {
-            if (!isCaseSensitive)
+            if (!CaseSensitive)
                 sql += " COLLATE NOCASE";
             SqlErr = string.Empty;
             try
@@ -230,7 +239,7 @@ namespace VerificationCode
             catch (Exception ex)
             {
                 SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_param);
+                SQLiteLog.WriteLine("sql", SqlErr, sql, as_param);
                 return null;
             }
         }
@@ -240,9 +249,9 @@ namespace VerificationCode
         /// <param name="sql">sql字符串</param>
         /// <param name="as_params">参数</param>
         /// <returns></returns>
-        public static object ExecuteScalarObj(string sql, SQLiteParameter[] as_params)
+        internal static object ExecuteScalarObj(string sql, SQLiteParameter[] as_params)
         {
-            if (!isCaseSensitive)
+            if (!CaseSensitive)
                 sql += " COLLATE NOCASE";
             SqlErr = string.Empty;
             try
@@ -260,7 +269,7 @@ namespace VerificationCode
             catch (Exception ex)
             {
                 SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_params);
+                SQLiteLog.WriteLine("sql", SqlErr, sql, as_params);
                 return null;
             }
         }
@@ -272,9 +281,9 @@ namespace VerificationCode
         /// <param name="sql">sql字符串</param>
         /// <param name="as_params">参数</param>
         /// <returns></returns>
-        public static object ExecuteScalarObj(CommandType type, string as_connStr, string sql, SQLiteParameter[] as_params)
+        internal static object ExecuteScalarObj(CommandType type, string as_connStr, string sql, SQLiteParameter[] as_params)
         {
-            if (!isCaseSensitive)
+            if (!CaseSensitive)
                 sql += " COLLATE NOCASE";
             SqlErr = string.Empty;
             try
@@ -293,7 +302,7 @@ namespace VerificationCode
             catch (Exception ex)
             {
                 SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_params);
+                SQLiteLog.WriteLine("sql", SqlErr, sql, as_params);
                 return null;
             }
         }
@@ -408,7 +417,7 @@ namespace VerificationCode
         /// <param name="as_param">参数 如as_param1="@id=123"</param>
         public static SQLiteDataReader ExecuteDataReader(string sql, params string[] as_param)
         {
-            if (!isCaseSensitive)
+            if (!CaseSensitive)
                 sql += " COLLATE NOCASE";
             SqlErr = string.Empty;
             try
@@ -430,7 +439,7 @@ namespace VerificationCode
             catch (Exception ex)
             {
                 SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_param);
+                SQLiteLog.WriteLine("sql", SqlErr, sql, as_param);
                 return null;
             }
         }
@@ -443,7 +452,7 @@ namespace VerificationCode
         /// <param name="as_param">参数 如as_param1="@id=123"</param>
         public static SQLiteDataReader ExecuteDataReader(CommandType type, string as_connStr, string sql, params string[] as_param)
         {
-            if (!isCaseSensitive)
+            if (!CaseSensitive)
                 sql += " COLLATE NOCASE";
             SqlErr = string.Empty;
             try
@@ -466,7 +475,7 @@ namespace VerificationCode
             catch (Exception ex)
             {
                 SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_param);
+                SQLiteLog.WriteLine("sql", SqlErr, sql, as_param);
                 return null;
             }
         }
@@ -477,7 +486,7 @@ namespace VerificationCode
         /// <param name="as_params">参数</param>
         public static SQLiteDataReader ExecuteDataReader(string sql, SQLiteParameter[] as_params)
         {
-            if (!isCaseSensitive)
+            if (!CaseSensitive)
                 sql += " COLLATE NOCASE";
             SqlErr = string.Empty;
             try
@@ -499,7 +508,7 @@ namespace VerificationCode
             catch (Exception ex)
             {
                 SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_params);
+                SQLiteLog.WriteLine("sql", SqlErr, sql, as_params);
                 return null;
             }
         }
@@ -512,7 +521,7 @@ namespace VerificationCode
         /// <param name="as_params">参数</param>
         public static SQLiteDataReader ExecuteDataReader(CommandType type, string as_connStr, string sql, SQLiteParameter[] as_params)
         {
-            if (!isCaseSensitive)
+            if (!CaseSensitive)
                 sql += " COLLATE NOCASE";
             SqlErr = string.Empty;
             try
@@ -535,7 +544,7 @@ namespace VerificationCode
             catch (Exception ex)
             {
                 SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_params);
+                SQLiteLog.WriteLine("sql", SqlErr, sql, as_params);
                 return null;
             }
         }
@@ -547,7 +556,7 @@ namespace VerificationCode
         /// <returns></returns>
         public static DataTable ExecuteDataTable(string sql, params string[] as_param)
         {
-            if (!isCaseSensitive)
+            if (!CaseSensitive)
                 sql += " COLLATE NOCASE";
             SqlErr = string.Empty;
             try
@@ -597,7 +606,7 @@ namespace VerificationCode
             catch (Exception ex)
             {
                 SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_param);
+                SQLiteLog.WriteLine("sql", SqlErr, sql, as_param);
                 return null;
             }
         }
@@ -611,7 +620,7 @@ namespace VerificationCode
         /// <returns></returns>
         public static DataTable ExecuteDataTable(CommandType type, string as_connStr, string sql, params string[] as_param)
         {
-            if (!isCaseSensitive)
+            if (!CaseSensitive)
                 sql += " COLLATE NOCASE";
             SqlErr = string.Empty;
             try
@@ -636,7 +645,7 @@ namespace VerificationCode
             catch (Exception ex)
             {
                 SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_param);
+                SQLiteLog.WriteLine("sql", SqlErr, sql, as_param);
                 return null;
             }
         }
@@ -648,7 +657,7 @@ namespace VerificationCode
         /// <returns></returns>
         public static DataTable ExecuteDataTable(string sql, SQLiteParameter[] as_params)
         {
-            if (!isCaseSensitive)
+            if (!CaseSensitive)
                 sql += " COLLATE NOCASE";
             SqlErr = string.Empty;
             try
@@ -672,7 +681,7 @@ namespace VerificationCode
             catch (Exception ex)
             {
                 SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_params);
+                SQLiteLog.WriteLine("sql", SqlErr, sql, as_params);
                 return null;
             }
         }
@@ -686,7 +695,7 @@ namespace VerificationCode
         /// <returns></returns>
         public static DataTable ExecuteDataTable(CommandType type, string as_connStr, string sql, SQLiteParameter[] as_params)
         {
-            if (!isCaseSensitive)
+            if (!CaseSensitive)
                 sql += " COLLATE NOCASE";
             SqlErr = string.Empty;
             try
@@ -711,14 +720,14 @@ namespace VerificationCode
             catch (Exception ex)
             {
                 SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, sql, as_params);
+                SQLiteLog.WriteLine("sql", SqlErr, sql, as_params);
                 return null;
             }
         }
         /// <summary>
         /// 返回当前条件下的总行数
         /// </summary>
-        private static int ExecuteScalarRows(CommandType type, string as_connStr, string sql, SQLiteParameter[] as_params)
+        internal static int ExecuteScalarRows(CommandType type, string as_connStr, string sql, SQLiteParameter[] as_params)
         {
             int beg = sql.ToLower().IndexOf("select");
             int end = sql.ToLower().IndexOf("from");
@@ -729,7 +738,7 @@ namespace VerificationCode
         /// <summary>
         /// 返回当前条件下的总行数
         /// </summary>
-        private static int ExecuteScalarRows(CommandType type, string as_connStr, string sql, params string[] as_param)
+        internal static int ExecuteScalarRows(CommandType type, string as_connStr, string sql, params string[] as_param)
         {
             int beg = sql.ToLower().IndexOf("select");
             int end = sql.ToLower().IndexOf("from");
@@ -740,7 +749,7 @@ namespace VerificationCode
         /// <summary>
         /// 返回当前条件下的总行数
         /// </summary>
-        private static int ExecuteScalarRows(string sql, SQLiteParameter[] as_params)
+        internal static int ExecuteScalarRows(string sql, SQLiteParameter[] as_params)
         {
             int beg = sql.ToLower().IndexOf("select");
             int end = sql.ToLower().IndexOf("from");
@@ -751,7 +760,7 @@ namespace VerificationCode
         /// <summary>
         /// 返回当前条件下的总行数
         /// </summary>
-        private static int ExecuteScalarRows(string sql, params string[] as_param)
+        internal static int ExecuteScalarRows(string sql, params string[] as_param)
         {
             int beg = sql.ToLower().IndexOf("select");
             int end = sql.ToLower().IndexOf("from");
@@ -892,7 +901,7 @@ namespace VerificationCode
                         {
                             tran.Rollback();
                             SqlErr = ex.Message;
-                            Log.WriteLine("sql", SqlErr, "", "");
+                            SQLiteLog.WriteLine("sql", SqlErr, "", "");
                         }
                     }
                 }
@@ -900,7 +909,7 @@ namespace VerificationCode
             catch (Exception ex)
             {
                 SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, "", "");
+                SQLiteLog.WriteLine("sql", SqlErr, "", "");
             }
         }
         /// <summary>
@@ -939,7 +948,7 @@ namespace VerificationCode
                         {
                             tran.Rollback();
                             SqlErr = ex.Message;
-                            Log.WriteLine("sql", SqlErr, "", "");
+                            SQLiteLog.WriteLine("sql", SqlErr, "", "");
                         }
                     }
                 }
@@ -947,7 +956,7 @@ namespace VerificationCode
             catch (Exception ex)
             {
                 SqlErr = ex.Message;
-                Log.WriteLine("sql", SqlErr, "", "");
+                SQLiteLog.WriteLine("sql", SqlErr, "", "");
             }
         }
         /// <summary>
@@ -990,7 +999,7 @@ namespace VerificationCode
                 catch (Exception e)
                 {
                     SqlErr = e.Message;
-                    Log.WriteLine("sql", SqlErr, "TranTableName:" + tableName, "");
+                    SQLiteLog.WriteLine("sql", SqlErr, "TranTableName:" + tableName, "");
                     //事务回滚
                     trans.Rollback();
                 }
@@ -1039,7 +1048,7 @@ namespace VerificationCode
                 catch (Exception e)
                 {
                     SqlErr = e.Message;
-                    Log.WriteLine("sql", SqlErr, "TranTableName:" + tableName, "");
+                    SQLiteLog.WriteLine("sql", SqlErr, "TranTableName:" + tableName, "");
                     //事务回滚
                     trans.Rollback();
                 }
@@ -1103,7 +1112,7 @@ namespace VerificationCode
                 catch (Exception e)
                 {
                     SqlErr = e.Message;
-                    Log.WriteLine("sql", SqlErr, "TranTableName:" + tableName, "");
+                    SQLiteLog.WriteLine("sql", SqlErr, "TranTableName:" + tableName, "");
                     //事务回滚
                     trans.Rollback();
                 }
@@ -1169,7 +1178,7 @@ namespace VerificationCode
                 catch (Exception e)
                 {
                     SqlErr = e.Message;
-                    Log.WriteLine("sql", SqlErr, "TranTableName:" + tableName, "");
+                    SQLiteLog.WriteLine("sql", SqlErr, "TranTableName:" + tableName, "");
                     //事务回滚
                     trans.Rollback();
                 }
@@ -1182,7 +1191,7 @@ namespace VerificationCode
         public static Boolean of_ExistTable(string tableName)
         {
             string sql = "SELECT count(*) FROM sqlite_master WHERE type='table' AND name=@tablename";
-            int row = ExecuteScalarNum(sql, "@tablename="+ tableName);
+            int row = ExecuteScalarNum(sql, "@tablename=" + tableName);
             if (row == 1)
                 return true;
             else
@@ -1245,13 +1254,13 @@ namespace VerificationCode
         /// 将参数转为SQLiteParameter对象
         /// </summary>
         /// <param name="as_param">参数 如as_param1="@id=123"</param>
-        private static SQLiteParameter[] GetSQLiteParameter(params string[] as_param)
+        internal static SQLiteParameter[] GetSQLiteParameter(params string[] as_param)
         {
             if (as_param == null)
                 return null;
             if (as_param.Length == 0)
                 return null;
-            SQLiteParameter[] P = new SQLiteParameter[as_param.Length];
+            SQLiteParameter[] param = new SQLiteParameter[as_param.Length];
             for (int i = 0; i < as_param.Length; i++)
             {
                 string ls_str = as_param[i];
@@ -1261,24 +1270,30 @@ namespace VerificationCode
                     throw new ArgumentNullException("传入参数错误,正确格式为：@id=123");
                 string[] ls_strlist = ls_str.Split(new string[] { "=" }, StringSplitOptions.None);
                 if (ls_strlist.Length > 2)
-                    throw new ArgumentNullException("传入参数错误,正确格式为：@id=123");
+                {
+                    //防止内容含=号
+                    ls_strlist = new string[2];
+                    ls_strlist[0] = ls_str.Substring(0, ls_str.IndexOf("="));
+                    ls_strlist[1] = ls_str.Substring(ls_str.IndexOf("=") + 1);
+                }
                 string ls_param = ls_strlist[0].Trim();
                 string ls_value = ls_strlist[1];
-                P[i] = new SQLiteParameter(ls_param, ls_value);
+                param[i] = new SQLiteParameter(ls_param, ls_value);
             }
-            return P;
+            return param;
         }
         /// <summary>
         /// SqlServer(供参考)
         /// </summary>
         /// <param name="as_param">参数 如as_param1="@id=123"</param>
-        private System.Data.SqlClient.SqlParameter[] GetSqlParameter(params string[] as_param)
+        [Obsolete("此方法仅供参考")]
+        protected System.Data.SqlClient.SqlParameter[] GetSqlParameter(params string[] as_param)
         {
             if (as_param == null)
                 return null;
             if (as_param.Length == 0)
                 return null;
-            System.Data.SqlClient.SqlParameter[] P = new System.Data.SqlClient.SqlParameter[as_param.Length];
+            System.Data.SqlClient.SqlParameter[] param = new System.Data.SqlClient.SqlParameter[as_param.Length];
 
             for (int i = 0; i < as_param.Length; i++)
             {
@@ -1293,18 +1308,272 @@ namespace VerificationCode
                 string ls_param = ls_strlist[0].Trim();
                 string ls_value = ls_strlist[1];
 
-                P[i] = new System.Data.SqlClient.SqlParameter(ls_param, ls_value);
+                param[i] = new System.Data.SqlClient.SqlParameter(ls_param, ls_value);
             }
-            return P;
+            return param;
+        }
+    }
+    /// <summary>
+    /// 支持事务的SQLite类
+    /// </summary>
+    public class SQLiteDbca
+    {
+        #region 参数
+        /// <summary>
+        /// 连接字符串
+        /// </summary>
+        private string dbconnStr = SQLiteHelper.dbConnection;
+        /// <summary>
+        /// 执行sql错误提示 无错误时返回string.Empty
+        /// </summary>
+        public string SqlErr = string.Empty;
+        /// <summary>
+        /// 命令对象
+        /// </summary>
+        internal SQLiteCommand cmd;
+        /// <summary>
+        /// 连接对象
+        /// </summary>
+        internal SQLiteConnection conn;
+        /// <summary>
+        /// 事务对象
+        /// </summary>
+        internal SQLiteTransaction tran;
+        /// <summary>
+        /// 执行次数
+        /// </summary>
+        internal int ExeNum = 0;
+        #endregion
+        /// <summary>
+        /// 构造方法
+        /// </summary>
+        public SQLiteDbca()
+        {
+            try
+            {
+                conn = new SQLiteConnection(dbconnStr);
+                conn.Open();
+                cmd = new SQLiteCommand();
+                tran = conn.BeginTransaction();
+                cmd.Connection = conn;
+                cmd.Transaction = tran;
+            }
+            catch (Exception ex)
+            {
+                SqlErr = ex.Message;
+                SQLiteLog.WriteLine("dbca", ex.Message, "dbconnStr:" + dbconnStr, "");
+            }
+        }
+        /// <summary>
+        /// 构造方法
+        /// </summary>
+        /// <param name="as_connStr">连接字符串</param>
+        public SQLiteDbca(string as_connStr)
+        {
+            try
+            {
+                this.dbconnStr = as_connStr;
+                conn = new SQLiteConnection(dbconnStr);
+                conn.Open();
+                cmd = new SQLiteCommand();
+                tran = conn.BeginTransaction();
+                cmd.Connection = conn;
+                cmd.Transaction = tran;
+            }
+            catch (Exception ex)
+            {
+                SqlErr = ex.Message;
+                SQLiteLog.WriteLine("dbca", ex.Message, "dbconnStr:" + dbconnStr, "");
+            }
+        }
+        /// <summary>
+        /// 返回查询字符串第一个匹配项
+        /// </summary>
+        /// <param name="sql">sql字符串</param>
+        /// <param name="as_param">参数 如as_param1="@id=123"</param>
+        /// <returns>返回对应值</returns>
+        internal object ExecuteScalarObj(string sql, params string[] as_param)
+        {
+            SqlErr = string.Empty;
+            ExeNum++;
+            try
+            {
+                cmd.Parameters.Clear();
+                SQLiteParameter[] P = SQLiteHelper.GetSQLiteParameter(as_param);
+                if (P != null)
+                    cmd.Parameters.AddRange(P);
+                object o = cmd.ExecuteScalar();
+                cmd.Parameters.Clear();
+                return o;
+            }
+            catch (Exception ex)
+            {
+                SqlErr = ex.Message;
+                SQLiteLog.WriteLine("dbca", SqlErr, sql, as_param);
+                return null;
+            }
+        }
+        /// <summary>
+        /// 执行SQL命令
+        /// </summary>
+        /// <param name="sql">sql字符串</param>
+        /// <param name="as_param">参数 如as_param1="@id=123"</param>
+        /// <returns>返回受影响行</returns>
+        public int ExecuteNonQuery(string sql, params string[] as_param)
+        {
+            SqlErr = string.Empty;
+            ExeNum++;
+            try
+            {
+                cmd.Connection = conn;
+                cmd.CommandText = sql;
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+                SQLiteParameter[] P = SQLiteHelper.GetSQLiteParameter(as_param);
+                if (P != null)
+                    cmd.Parameters.AddRange(P);
+                int rows = cmd.ExecuteNonQuery();
+                cmd.Parameters.Clear();
+                return rows;
+            }
+            catch (Exception ex)
+            {
+                SqlErr = ex.Message;
+                SQLiteLog.WriteLine("dbca", SqlErr, sql, as_param);
+                return -1;
+            }
+        }
+        /// <summary>
+        /// 返回查询字符串第一个匹配项
+        /// </summary>
+        /// <param name="sql">sql字符串</param>
+        /// <param name="as_param">参数 如as_param1="@id=123"</param>
+        /// <returns>返回对应值,失败返回null</returns>
+        public string ExecuteScalar(string sql, params string[] as_param)
+        {
+            return ExecuteScalarObj(sql, as_param) as string;
+        }
+        /// <summary>
+        /// 返回查询结果的Int32对象
+        /// </summary>
+        /// <param name="sql">sql字符串</param>
+        /// <param name="as_param">参数 如as_param1="@id=123"</param>
+        /// <returns>对应的Int32对象,失败返回-1</returns>
+        public int ExecuteScalarNum(string sql, params string[] as_param)
+        {
+            string ls_rc = ExecuteScalarObj(sql, as_param) as string;
+            if (ls_rc == null)
+            {
+                return -1;
+            }
+            try { return Convert.ToInt32(ls_rc); }
+            catch { return -1; }
+        }
+        /// <summary>
+        /// 返回查询结果的DataTable对象
+        /// </summary>
+        /// <param name="sql">sql字符串</param>
+        /// <param name="as_param">参数 如as_param1="@id=123"</param>
+        /// <returns>对应的Int32对象,失败返回-1</returns>
+        public DataTable ExecuteScalarDataTable(string sql, params string[] as_param)
+        {
+
+            SqlErr = string.Empty;
+            ExeNum++;
+            DataTable ldt = null;
+            try
+            {
+                cmd.Connection = conn;
+                cmd.CommandText = sql;
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+                SQLiteParameter[] P = SQLiteHelper.GetSQLiteParameter(as_param);
+                if (P != null)
+                    cmd.Parameters.AddRange(P);
+                using (SQLiteDataAdapter sda = new SQLiteDataAdapter(cmd))
+                {
+                    sda.Fill(ldt);
+                }
+                cmd.Parameters.Clear();
+                return ldt;
+            }
+            catch (Exception ex)
+            {
+                SqlErr = ex.Message;
+                SQLiteLog.WriteLine("dbca", SqlErr, sql, as_param);
+                return null;
+            }
+        }
+        /// <summary>
+        /// 事务提交
+        /// </summary>
+        public void Commit()
+        {
+            if (ExeNum > 0)
+            {
+                tran.Commit();
+                ExeNum = 0;
+                tran = conn.BeginTransaction();
+            }
+        }
+        /// <summary>
+        /// 事务回滚
+        /// </summary>
+        public void RollBack()
+        {
+            if (ExeNum > 0)
+            {
+                tran.Rollback();
+                ExeNum = 0;
+                tran = conn.BeginTransaction();
+            }
+        }
+        /// <summary>
+        /// 关闭连接
+        /// </summary>
+        public void Close()
+        {
+            if (conn != null && conn.State == ConnectionState.Open)
+            {
+                conn.Close();
+            }
+            conn = null;
+            cmd = null;
+            tran = null;
+        }
+        /// <summary>
+        /// 事务提交并关闭连接
+        /// </summary>
+        public void CommitAndClose()
+        {
+            Commit();
+            Close();
+        }
+        /// <summary>
+        /// 事务回滚并关闭连接
+        /// </summary>
+        public void RollBackAndClose()
+        {
+            RollBack();
+            Close();
         }
     }
     /// <summary>
     /// insert or update
     /// </summary>
-    public class n_create_sql
+    public class SQLite_create_sql
     {
-        private string tableName = string.Empty;
+        /// <summary>
+        /// 当前表名
+        /// </summary>
+        private string tableName;
+        /// <summary>
+        /// 待插入 or 待更新字段
+        /// </summary>
         private System.Collections.ArrayList Col = new System.Collections.ArrayList();
+        /// <summary>
+        /// 待插入 or 待更新字段的值
+        /// </summary>
         private System.Collections.ArrayList Set = new System.Collections.ArrayList();
         private string dbconnStr = SQLiteHelper.dbConnection;
         /// <summary>
@@ -1313,18 +1582,42 @@ namespace VerificationCode
         public string SqlErr = string.Empty;
         /// <summary>
         /// 执行sql的字符串
+        /// <para>仅供参考</para>
         /// </summary>
-        public string SqlStr = string.Empty;
-
-        public n_create_sql()
+        public string SQL = string.Empty;
+        /// <summary>
+        /// 事务对象
+        /// </summary>
+        private SQLiteDbca dbca;
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        public SQLite_create_sql() { }
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="as_tableName">表名</param>
+        public SQLite_create_sql(string as_tableName)
         {
-
+            this.tableName = as_tableName;
         }
-        public n_create_sql(string as_tableName)
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="dbca">事务对象</param>
+        /// <param name="as_tableName">表名</param>
+        public SQLite_create_sql(SQLiteDbca dbca, string as_tableName)
         {
-            tableName = as_tableName;
+            this.dbca = dbca;
+            this.tableName = as_tableName;
         }
-        public n_create_sql(CommandType type, string as_connStr, string as_tableName)
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="type">命令类型</param>
+        /// <param name="as_connStr">连接字符串</param>
+        /// <param name="as_tableName">表名</param>
+        public SQLite_create_sql(CommandType type, string as_connStr, string as_tableName)
         {
             dbconnStr = as_connStr;
             tableName = as_tableName;
@@ -1350,7 +1643,7 @@ namespace VerificationCode
         /// <summary>
         /// 执行inset
         /// </summary>
-        public Boolean of_execute()
+        public int of_execute()
         {
             SqlErr = "";
             if (string.IsNullOrEmpty(tableName))
@@ -1365,26 +1658,43 @@ namespace VerificationCode
                 query += "," + a;
             }
             query += ") VALUES (";
-            foreach (object a in Set)
+            foreach (object a in Col)
             {
-                query += ", '" + a + "'";
+                query += ", @" + a + "";
             }
             query += ")";
             query = query.Replace("(,", "(");
-            SqlStr = query;
-            int li_row = SQLiteHelper.ExecuteNonQuery(CommandType.Text, dbconnStr, query);
-            SqlErr = SQLiteHelper.SqlErr;
-            if (li_row >= 0)
-                return true;
+            //insert的参数化
+            string[] param = new string[Col.Count];
+            for (int i = 0; i < Col.Count; i++)
+            {
+                param[i] = "@" + Col[i] + "=" + Set[i];
+            }
+            SQL = query + " 参数:";
+            foreach (string p in param)
+            {
+                SQL += " " + p;
+            }
+            if (dbca == null)
+            {
+                int li_row = SQLiteHelper.ExecuteNonQuery(CommandType.Text, dbconnStr, query, param);
+                SqlErr = SQLiteHelper.SqlErr;
+                return li_row;
+            }
             else
-                return false;
+            {
+                int li_row = dbca.ExecuteNonQuery(query, param);
+                SqlErr = dbca.SqlErr;
+                return li_row;
+            }
         }
         /// <summary>
         /// 执行update
         /// </summary>
         /// <param name="as_where">id=@id</param>
         /// <param name="as_param">参数 如as_param1="@id=123"</param>
-        public Boolean of_execute(string as_where, params string[] as_param)
+        /// <returns>受影响行</returns>
+        public int of_execute(string as_where, params string[] as_param)
         {
             SqlErr = "";
             if (string.IsNullOrEmpty(tableName))
@@ -1396,17 +1706,38 @@ namespace VerificationCode
             string query = "update " + tableName + " set ";
             for (int i = 0; i < Col.Count; i++)
             {
-                query += Col[i] + "='" + Set[i] + "',";
+                query += Col[i] + "=@" + Col[i] + i + ",";//加上序号防止与where参数冲突
             }
+            //update的参数化
+            string[] param = new string[Col.Count];
+            for (int i = 0; i < Col.Count; i++)
+            {
+                param[i] = "@" + Col[i] + i + "=" + Set[i];
+            }
+            //合并where参数
+            System.Collections.Generic.List<string> merge = new System.Collections.Generic.List<string>();
+            merge.AddRange(param);
+            merge.AddRange(as_param);
+            string[] new_param = merge.ToArray();
             query += "where " + as_where;
             query = query.Replace(",where", " where");
-            SqlStr = query;
-            int li_row = SQLiteHelper.ExecuteNonQuery(CommandType.Text, dbconnStr, query, as_param);
-            SqlErr = SQLiteHelper.SqlErr;
-            if (li_row >= 0)
-                return true;
+            SQL = query + " 参数:";
+            foreach (string p in new_param)
+            {
+                SQL += " " + p;
+            }
+            if (dbca == null)
+            {
+                int li_row = SQLiteHelper.ExecuteNonQuery(CommandType.Text, dbconnStr, query, new_param);
+                SqlErr = SQLiteHelper.SqlErr;
+                return li_row;
+            }
             else
-                return true;
+            {
+                int li_row = dbca.ExecuteNonQuery(query, param);
+                SqlErr = dbca.SqlErr;
+                return li_row;
+            }
         }
         /// <summary>
         /// 执行update或insert
@@ -1414,7 +1745,8 @@ namespace VerificationCode
         /// </summary>
         /// <param name="as_where">id=@id</param>
         /// <param name="as_param">参数 如as_param1="@id=123"</param>
-        public Boolean of_executeInsertOrUpdate(string as_where, params string[] as_param)
+        /// <returns>受影响行</returns>
+        public int of_executeInsertOrUpdate(string as_where, params string[] as_param)
         {
             string ls_sql = @"select count(*) from " + tableName + " " + as_where;
             int li_row = SQLiteHelper.ExecuteScalarNum(ls_sql, as_param);
@@ -1425,6 +1757,7 @@ namespace VerificationCode
         }
         /// <summary>
         /// 获取sql字符串
+        /// <para>仅供参考</para>
         /// </summary>
         public string of_GetSql()
         {
@@ -1450,6 +1783,7 @@ namespace VerificationCode
         }
         /// <summary>
         /// 获取sql字符串
+        /// <para>仅供参考</para>
         /// </summary>
         /// <param name="as_where">id=@id</param>
         /// <param name="as_param">参数 如as_param1="@id=123"</param>
@@ -1474,8 +1808,12 @@ namespace VerificationCode
     }
     /// <summary>
     /// 系统参数表类 表名mysysset
+    /// <para>mysysset表结构：</para>
+    /// <para>itemtype、itemname、itemvalue、memo</para>
+    /// <para>primary key (itemtype,itemname)</para>
+    /// <para>表结构自动创建</para>
     /// </summary>
-    public class publicfuns
+    public class SQLiteMysysSet
     {
         /// <summary>
         /// 执行sql错误提示 无错误时返回string.Empty
@@ -1518,68 +1856,66 @@ namespace VerificationCode
         /// <summary>
         /// 写入itemvalue
         /// </summary>
-        public static bool of_SetMySysSet(string as_type, string as_item, string as_value, string as_memo = "")
+        public static int of_SetMySysSet(string as_type, string as_item, string as_value, string as_memo = "")
         {
             CreateSysParamTable();
             SqlErr = "";
             int li_row = 0;
             string ls_sql = "select count(*) from mysysset where itemtype=@itemtype and itemname=@itemname";
             li_row = SQLiteHelper.ExecuteScalarNum(ls_sql, "@itemtype=" + as_type, "@itemname=" + as_item);
-            n_create_sql lnv_sql = new n_create_sql();
+            SQLite_create_sql lnv_sql = new SQLite_create_sql();
             lnv_sql.of_SetTable("mysysset");
             lnv_sql.of_AddCol("itemvalue", as_value);
             if (!string.IsNullOrEmpty(as_memo))
             {
                 lnv_sql.of_AddCol("memo", as_memo);
             }
-            bool li_rc = false;
             if (li_row <= 0)
             {
                 lnv_sql.of_AddCol("itemtype", as_type);
                 lnv_sql.of_AddCol("itemname", as_item);
-                li_rc = lnv_sql.of_execute();
+                li_row = lnv_sql.of_execute();
             }
-            if (li_row > 0)
+            else if (li_row > 0)
             {
-                li_rc = lnv_sql.of_execute("itemtype=@itemtype and itemname=@itemname", "@itemtype=" + as_type, "@itemname=" + as_item);
+                li_row = lnv_sql.of_execute("itemtype=@itemtype and itemname=@itemname", "@itemtype=" + as_type, "@itemname=" + as_item);
             }
             SqlErr = lnv_sql.SqlErr;
-            return li_rc;
+            return li_row;
         }
         /// <summary>
         /// 写入itemvalue
         /// </summary>
-        public static bool of_SetMySysSet(CommandType type, string dbconn, string as_type, string as_item, string as_value, string as_memo = "")
+        public static int of_SetMySysSet(CommandType type, string dbconn, string as_type, string as_item, string as_value, string as_memo = "")
         {
             CreateSysParamTable(dbconn);
             SqlErr = "";
             int li_row = 0;
             string ls_sql = "select count(*) from mysysset where itemtype=@itemtype and itemname=@itemname";
             li_row = SQLiteHelper.ExecuteScalarNum(type, dbconn, ls_sql, "@itemtype=" + as_type, "@itemname=" + as_item);
-            n_create_sql lnv_sql = new n_create_sql(type, dbconn, "mysysset");
+            SQLite_create_sql lnv_sql = new SQLite_create_sql(type, dbconn, "mysysset");
             lnv_sql.of_AddCol("itemvalue", as_value);
             if (!string.IsNullOrEmpty(as_memo))
             {
                 lnv_sql.of_AddCol("memo", as_memo);
             }
-            bool li_rc = false;
             if (li_row <= 0)
             {
                 lnv_sql.of_AddCol("itemtype", as_type);
                 lnv_sql.of_AddCol("itemname", as_item);
-                li_rc = lnv_sql.of_execute();
+                li_row = lnv_sql.of_execute();
             }
-            if (li_row > 0)
+            else if (li_row > 0)
             {
-                li_rc = lnv_sql.of_execute("itemtype=@itemtype and itemname=@itemname", "@itemtype=" + as_type, "@itemname=" + as_item);
+                li_row = lnv_sql.of_execute("itemtype=@itemtype and itemname=@itemname", "@itemtype=" + as_type, "@itemname=" + as_item);
             }
             SqlErr = lnv_sql.SqlErr;
-            return li_rc;
+            return li_row;
         }
         /// <summary>
         /// 写入memo(当前行必须存在) 
         /// </summary>
-        public static bool of_SetMySysSetMemo(string as_type, string as_item, string as_memo)
+        public static int of_SetMySysSetMemo(string as_type, string as_item, string as_memo)
         {
             CreateSysParamTable();
             SqlErr = "";
@@ -1587,22 +1923,21 @@ namespace VerificationCode
             string ls_sql = "select count(*) from mysysset where itemtype=@itemtype and itemname=@itemname";
             li_row = SQLiteHelper.ExecuteScalarNum(ls_sql, "@itemtype=" + as_type, "@itemname=" + as_item);
             if (li_row <= 0)
-                return false;
-            n_create_sql lnv_sql = new n_create_sql();
+                return -1;
+            SQLite_create_sql lnv_sql = new SQLite_create_sql();
             lnv_sql.of_SetTable("mysysset");
             lnv_sql.of_AddCol("memo", as_memo);
-            bool li_rc = false;
             if (li_row > 0)
             {
-                li_rc = lnv_sql.of_execute("itemtype=@itemtype and itemname=@itemname", "@itemtype=" + as_type, "@itemname=" + as_item);
+                li_row = lnv_sql.of_execute("itemtype=@itemtype and itemname=@itemname", "@itemtype=" + as_type, "@itemname=" + as_item);
             }
             SqlErr = lnv_sql.SqlErr;
-            return li_rc;
+            return li_row;
         }
         /// <summary>
         /// 写入memo(当前行必须存在) 
         /// </summary>
-        public static bool of_SetMySysSetMemo(CommandType type, string dbconn, string as_type, string as_item, string as_memo)
+        public static int of_SetMySysSetMemo(CommandType type, string dbconn, string as_type, string as_item, string as_memo)
         {
             CreateSysParamTable();
             SqlErr = "";
@@ -1610,13 +1945,12 @@ namespace VerificationCode
             string ls_sql = "select count(*) from mysysset where itemtype=@itemtype and itemname=@itemname";
             li_row = SQLiteHelper.ExecuteScalarNum(type, dbconn, ls_sql, "@itemtype=" + as_type, "@itemname=" + as_item);
             if (li_row <= 0)
-                return false;
-            n_create_sql lnv_sql = new n_create_sql(type, dbconn, "mysysset");
+                return -1;
+            SQLite_create_sql lnv_sql = new SQLite_create_sql(type, dbconn, "mysysset");
             lnv_sql.of_AddCol("memo", as_memo);
-            bool li_rc = false;
-            li_rc = lnv_sql.of_execute("itemtype=@itemtype and itemname=@itemname", "@itemtype=" + as_type, "@itemname=" + as_item);
+            li_row = lnv_sql.of_execute("itemtype=@itemtype and itemname=@itemname", "@itemtype=" + as_type, "@itemname=" + as_item);
             SqlErr = lnv_sql.SqlErr;
-            return li_rc;
+            return li_row;
         }
         /// <summary>
         /// 返回itemvalue
@@ -1672,9 +2006,9 @@ namespace VerificationCode
         }
     }
     /// <summary>
-    /// 日志类
+    /// 日志类(内部使用)
     /// </summary>
-    public class Log
+    internal class SQLiteLog
     {
         /// <summary>
         /// 写日志
@@ -1682,7 +2016,8 @@ namespace VerificationCode
         /// <param name="strAction">标题</param>
         /// <param name="strText">内容</param>
         /// <param name="FolderName">文件夹</param>
-        public static void WriteLine(string strAction, string strText, string as_sql, params string[] as_param)
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        internal static void WriteLine(string strAction, string strText, string as_sql, params string[] as_param)
         {
             string path = AppDomain.CurrentDomain.BaseDirectory + "\\Log\\" + DateTime.Now.ToString("yyyy-MM-dd") + "\\";
             if (!Directory.Exists(path))
@@ -1720,7 +2055,8 @@ namespace VerificationCode
         /// <param name="strAction">标题</param>
         /// <param name="strText">内容</param>
         /// <param name="FolderName">文件夹</param>
-        public static void WriteLine(string strAction, string strText, string as_sql, SQLiteParameter[] as_params)
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        internal static void WriteLine(string strAction, string strText, string as_sql, SQLiteParameter[] as_params)
         {
             string path = AppDomain.CurrentDomain.BaseDirectory + "\\Log\\" + DateTime.Now.ToString("yyyy-MM-dd") + "\\";
             if (!Directory.Exists(path))
@@ -1760,7 +2096,8 @@ namespace VerificationCode
         /// <param name="strText">内容</param>
         /// <param name="as_Path">路径</param>
         /// <param name="FolderName">文件夹</param>
-        public static void Write(string strAction, string strText, string as_Path, string FolderName = "Log")
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        internal static void Write(string strAction, string strText, string as_Path, string FolderName = "Log")
         {
             string path = as_Path + "\\" + FolderName + "\\" + DateTime.Now.ToString("yyyy-MM-dd") + "\\";
             if (!Directory.Exists(path))
@@ -1785,7 +2122,8 @@ namespace VerificationCode
         /// <param name="strAction">标题</param>
         /// <param name="strText">内容</param>
         /// <param name="FolderName">文件夹</param>
-        public static void Write(string strAction, string strText, string FolderName = "Log")
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        internal static void Write(string strAction, string strText, string FolderName = "Log")
         {
             string path = AppDomain.CurrentDomain.BaseDirectory + "\\" + FolderName + "\\" + DateTime.Now.ToString("yyyy-MM-dd") + "\\";
             if (!Directory.Exists(path))
