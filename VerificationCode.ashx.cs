@@ -520,7 +520,7 @@ namespace VerificationCode
             //return true;
             //将采样结果收集到数据库
             CreateTable();
-            n_create_sql nsql = new n_create_sql("data");
+            SQLite_create_sql nsql = new SQLite_create_sql("data");
             nsql.of_AddCol("sumtime", __totaldate);
             nsql.of_AddCol("abscissa", HttpContext.Current.Request["point"]);
             nsql.of_AddCol("total", _datalist.Length);
