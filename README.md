@@ -27,3 +27,13 @@
   "normal":"data:image/jpg;base64,/..."
 }
 ```
+#### 使用示例
+```javascript
+$("#__Verification").slide({
+    imgspec: "200*100",
+    successCallBack: function () {
+        console.log("success");
+        alert('你已通过验证!');
+    }
+});
+```
