@@ -245,10 +245,11 @@
                             __successCallBack();
                         dragOk();
                     } else {
-                        $(".refesh_bg").show();
+                        
                         $xy_img.animate({ 'left': 0 }, 300);
                         handler.animate({ 'left': 0 }, 300);
                         drag_bg.animate({ 'width': 0 }, 300);
+                        setTimeout(function () { $(".refesh_bg").show(); }, 300);
                         if (result['msg'] > 4) {
                             //超过最大错误次数限制 刷新验证码
                             $("#" + __codediv).refresh();
