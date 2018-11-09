@@ -51,10 +51,6 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\webdll\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="System.Data.SQLite, Version=1.0.90.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\System.Data.SQLite.DLL</HintPath>
-    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -75,8 +71,6 @@
     <Content Include="demo.htm" />
     <Content Include="src\demo.png" />
     <Content Include="lib\Newtonsoft.Json.dll" />
-    <Content Include="lib\SQLite.Interop.dll" />
-    <Content Include="lib\System.Data.SQLite.dll" />
     <Content Include="src\200_100\0.jpg" />
     <Content Include="src\200_100\1.jpg" />
     <Content Include="src\200_100\10.jpg" />
@@ -270,7 +264,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\SQLiteHelper.cs" />
     <Compile Include="src\VerificationCode.ashx.cs">
       <DependentUpon>VerificationCode.ashx</DependentUpon>
     </Compile>
