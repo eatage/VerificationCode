@@ -44,7 +44,7 @@
         $('#drag').drag(__successCallBack, __imgx, __imgy, __codediv);
         $.ajax({ //获取验证码
             type: "POST",
-            url: "./VerificationCode.ashx?action=getcode",
+            url: "src/VerificationCode.ashx?action=getcode",
             dataType: "JSON",
             async: true,
             data: { spec: __spec },
@@ -217,7 +217,7 @@
             t2 = new Date();
             $.ajax({ //校验
                 type: "POST",
-                url: "./VerificationCode.ashx?action=check",
+                url: "src/VerificationCode.ashx?action=check",
                 dataType: "JSON",
                 async: true,
                 data:

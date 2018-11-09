@@ -25,6 +25,7 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -72,8 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="demo.htm" />
-    <Content Include="demo.png" />
-    <Content Include="favicon.ico" />
+    <Content Include="src\demo.png" />
     <Content Include="lib\Newtonsoft.Json.dll" />
     <Content Include="lib\SQLite.Interop.dll" />
     <Content Include="lib\System.Data.SQLite.dll" />
@@ -270,13 +270,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SQLiteHelper.cs" />
-    <Compile Include="VerificationCode.ashx.cs">
+    <Compile Include="src\SQLiteHelper.cs" />
+    <Compile Include="src\VerificationCode.ashx.cs">
       <DependentUpon>VerificationCode.ashx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="VerificationCode.ashx" />
+    <Content Include="src\VerificationCode.ashx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\PublishProfiles\app.publishsetting.pubxml" />

@@ -17,7 +17,7 @@ namespace VerificationCode
         //裁剪的小图大小
         private const int _shearSize = 40;
         //原始图片所在路径 300*300
-        private string path = System.Web.HttpContext.Current.Server.MapPath("src") + "\\300_300\\";
+        private string path = System.Web.HttpContext.Current.Server.MapPath("300_300") + "\\";
         //原始图片数量
         private const int _ImgNum = 60;
         //原始图片宽px
@@ -85,7 +85,7 @@ namespace VerificationCode
                     _MaxRangeY = 150;
                     _CutX = 30;
                     _CutY = 100;
-                    path = System.Web.HttpContext.Current.Server.MapPath("src") + "\\300_200\\";
+                    path = System.Web.HttpContext.Current.Server.MapPath("300_200") + "\\";
                     break;
                 case "200*100":
                     _ImgWidth = 200;
@@ -96,7 +96,7 @@ namespace VerificationCode
                     _MaxRangeY = 55;
                     _CutX = 20;
                     _CutY = 50;
-                    path = System.Web.HttpContext.Current.Server.MapPath("src") + "\\200_100\\";
+                    path = System.Web.HttpContext.Current.Server.MapPath("200_100") + "\\";
                     break;
             }
             #endregion
