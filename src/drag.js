@@ -9,9 +9,11 @@
     var __imgx = 0, //图片宽度
         __imgy = 0, //图片高度
         __spec = "",//图片尺寸
-        __executename,//校验通过后执行的函数名
+        __successCallBack,//校验通过后执行的回调函数
         __codediv;//验证码区域的div
-    $.fn.slide = function (imgspec, exename) {
+    $.fn.slide = function (options) {
+        var imgspec = options.imgspec;
+        __successCallBack = options.successCallBack;
         //校验参数
         if (typeof imgspec === 'undefined') {
             imgspec = "300*300";
@@ -19,21 +21,16 @@
         else if (typeof imgspec !== "string") {
             imgspec = "300*300";
         }
-        if (typeof exename === 'undefined') {
-            exename = "";
-        }
-        else if (typeof exename !== "string") {
-            exename = "";
-        }
         var div = this;
         __codediv = div.attr("id");
         __spec = imgspec;
-        __executename = exename;
         if (__codediv === undefined) {
             throw div.selector + ' does not exist';
         }
         __init();
     };
+    //公开刷新函数
+    $.fn.refresh = __init;
     //载入
     function __init() {
         if (__spec === "")
@@ -44,7 +41,7 @@
         $("#" + __codediv).css("width", __imgx);
         $("#" + __codediv).css("height", parseInt(__imgy) + 34);
         CreadeCodeDiv();
-        $('#drag').drag(__executename, __imgx, __imgy, __codediv);
+        $('#drag').drag(__successCallBack, __imgx, __imgy, __codediv);
         $.ajax({ //获取验证码
             type: "POST",
             url: "./VerificationCode.ashx?action=getcode",
@@ -124,14 +121,13 @@
 * 滑块验证码校验
 */
 (function ($) {
-    $.fn.drag = function (executename, imgx, imgy, __codediv) {
+    $.fn.drag = function (__successCallBack, imgx, imgy, __codediv) {
         var x, drag = this, isMove = false;
         //添加背景，文字，滑块
         var html = '<div class="drag_bg"></div><div class="drag_text" onselectstart="return false;"'
             + 'unselectable="on">\u62d6\u52a8\u56fe\u7247\u9a8c\u8bc1</div>'
             + '<div class="handler handler_bg"></div><a href="javascript:;" onclick="console.log(\''
-            + '%cVerificationCode Refresh\',\'color:blue\');$(' + __codediv + ').slide(\'' + imgx
-            + '*' + imgy + '\',\'' + executename + '\')"'
+            + '%cVerificationCode Refresh\',\'color:blue\');$(\'#' + __codediv + '\').refresh()"'
             + ' title="\u70b9\u51fb\u5237\u65b0\u9a8c\u8bc1\u7801"'
             + 'style="width:16px;height:16px;"><div class="refesh_bg"></div></a>';
         this.append(html);
@@ -279,8 +275,8 @@
             $(document).unbind('mousemove');
             $(document).unbind('mouseup');
             $(".refesh_bg").hide();
-            if (executename !== '')
-                window[executename]();
+            if (__successCallBack !== undefined)
+                __successCallBack();
         }
     };
 })(jQuery);
