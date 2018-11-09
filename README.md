@@ -1,5 +1,5 @@
 ## (C#)滑块验证码
-![image](https://raw.githubusercontent.com/eatage/VerificationCode/master/demo.png)
+![image](https://raw.githubusercontent.com/eatage/VerificationCode/master/src/demo.png)
 
 ### VerificationCode简介
 
